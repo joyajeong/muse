@@ -27,13 +27,12 @@ public class SongListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song_list);
 
-//        songs = LikedSong.getLikedSongs();
-//        LikedSong newSong = (LikedSong) getIntent().getExtras().getParcelable("NEW_SONG");
+        //Only add the initial songs once
+        //need to fix this
+        if (likedSongs.size() < 5) {
+            addSongs();
+        }
 
-        addSongs();
-//        likedSongs.add(newSong);
-
-//        Log.i("checking songs", songs.get(1).getName());
         RecyclerView recyclerView = findViewById(R.id.rvSongs);
 
         RecyclerViewAdapter.ClickListener listener = new RecyclerViewAdapter.ClickListener() {
@@ -98,10 +97,8 @@ public class SongListActivity extends AppCompatActivity {
         ArrayList<Artist> artist2 = new ArrayList<>();
         artist2.add(new Artist("1zNqQNIdeOUZHb8zbZRFMX", "Swan Lee"));
         artist2.add(new Artist("5ZS223C6JyBfXasXxrRqOk", "Jhene Aiko"));
-        //Only add the initial songs once
-        if (likedSongs.size() < 2) {
-            likedSongs.add(new LikedSong("06nIuUCXydh4DcVfFhJa4R", "Every Summertime", artist1, "POP", "A song from the Shang-Chi soundtrack", 4, "https://i.scdn.co/image/ab67616d0000b2735843d11205f6dd6a2ab5f967"));
-            likedSongs.add(new LikedSong("0zaoWwS8RpE3LSDdmkg8TC", "In The Dark (with Jhene Aiko)", artist2, "POP", "A song from the Shang-Chi soundtrack", 5, "https://i.scdn.co/image/ab67616d0000b2735843d11205f6dd6a2ab5f967"));
-        }
+        likedSongs.add(new LikedSong("06nIuUCXydh4DcVfFhJa4R", "Every Summertime", artist1, "POP", "A song from the Shang-Chi soundtrack", 4, "https://i.scdn.co/image/ab67616d0000b2735843d11205f6dd6a2ab5f967"));
+        likedSongs.add(new LikedSong("0zaoWwS8RpE3LSDdmkg8TC", "In The Dark (with Jhene Aiko)", artist2, "POP", "A song from the Shang-Chi soundtrack", 5, "https://i.scdn.co/image/ab67616d0000b2735843d11205f6dd6a2ab5f967"));
+
     }
 }

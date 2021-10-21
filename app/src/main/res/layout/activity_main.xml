@@ -57,7 +57,6 @@
         android:marqueeRepeatLimit="marquee_forever"
         android:scrollHorizontally="true"
         android:singleLine="true"
-        android:text="TextView"
         app:layout_constraintStart_toStartOf="@+id/tvRecSongName"
         app:layout_constraintTop_toBottomOf="@+id/tvRecSongName" />
 
@@ -70,7 +69,7 @@
         app:layout_constraintEnd_toEndOf="@+id/tvRecSongName"
         app:layout_constraintHorizontal_bias="0.382"
         app:layout_constraintStart_toStartOf="@+id/tvRecArtistName"
-        app:layout_constraintTop_toBottomOf="@+id/ratingBar" />
+        app:layout_constraintTop_toBottomOf="@+id/ratingBarCard" />
 
     <Button
         android:id="@+id/btnAnotherSong"
@@ -84,7 +83,7 @@
         app:layout_constraintTop_toBottomOf="@+id/btnAdd" />
 
     <RatingBar
-        android:id="@+id/ratingBar"
+        android:id="@+id/ratingBarCard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"

@@ -61,7 +61,7 @@ public class RecommendationService {
 //                    + "&seed_genres=" + "pop"
 //                    + "&seed_tracks=" + seedTracks[0];
 //        } else {
-        URL = "https://api.spotify.com/v1/recommendations?limit=1&market=AU"
+        URL = "https://api.spotify.com/v1/recommendations?limit=10&market=AU"
                 + "&seed_artists=" + seedArtists[0] + "%2C" + seedArtists[1]
                 + "&seed_genres=" + "pop"
                 + "&seed_tracks=" + seedTracks[0];
@@ -75,7 +75,6 @@ public class RecommendationService {
                         try {
                             JSONObject object = jsonArray.getJSONObject(n);
                             Song song = gson.fromJson(object.toString(), Song.class);
-                            Log.i("test", song.toString());
                             songs.add(song);
                         } catch (JSONException e) {
                             e.printStackTrace();

@@ -35,6 +35,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ArrayList<LikedSong> mLikedSongs;
     private ArrayList<LikedSong> mLikedSongsFiltered;
     private ClickListener mClickListener;
+    private static final String TAG = "RecyclerViewAdapter";
 
     public RecyclerViewAdapter(ArrayList<LikedSong> likedSongs, ClickListener listener) {
         this.mLikedSongs = likedSongs;
@@ -117,6 +118,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 //            songGenre = itemView.findViewById(R.id.tvGenre);
             ratingBar = itemView.findViewById(R.id.ratingBarList);
             itemView.setOnClickListener(this);
+            Log.d(TAG, "In View holder");
+
         }
 
         @Override
