@@ -81,17 +81,16 @@ public class LikedSong {
     public static ArrayList<LikedSong> getLikedSongs() {
         Log.i("Where", "in getLikedSongs()");
 
-        ArrayList<LikedSong> songs = new ArrayList<>();
-        ArrayList<Artist> artist1 = new ArrayList<>();
-        artist1.add(new Artist("1234", "NIKI"));
-
-        ArrayList<Artist> artist2 = new ArrayList<>();
-        artist2.add(new Artist("1233", "Swan Lee"));
-        artist2.add(new Artist("1235", "Jhene Aiko"));
-
-        songs.add(new LikedSong("123", "Every Summertime", artist1, "POP", "A song from the Shang-Chi soundtrack", 4, "https://i.scdn.co/image/ab67616d0000b2735843d11205f6dd6a2ab5f967"));
-        songs.add(new LikedSong("124", "In The Dark (with Jhene Aiko)", artist2, "POP", "A song from the Shang-Chi soundtrack", 5, "https://i.scdn.co/image/ab67616d0000b2735843d11205f6dd6a2ab5f967"));
-
+        ArrayList<LikedSong> songs = SongListActivity.likedSongs;
+//        ArrayList<Artist> artist1 = new ArrayList<>();
+//        artist1.add(new Artist("2kxP07DLgs4xlWz8YHlvfh", "NIKI"));
+//
+//        ArrayList<Artist> artist2 = new ArrayList<>();
+//        artist2.add(new Artist("1zNqQNIdeOUZHb8zbZRFMX", "Swan Lee"));
+//        artist2.add(new Artist("5ZS223C6JyBfXasXxrRqOk", "Jhene Aiko"));
+//
+//        songs.add(new LikedSong("06nIuUCXydh4DcVfFhJa4R", "Every Summertime", artist1, "POP", "A song from the Shang-Chi soundtrack", 4, "https://i.scdn.co/image/ab67616d0000b2735843d11205f6dd6a2ab5f967"));
+//        songs.add(new LikedSong("0zaoWwS8RpE3LSDdmkg8TC", "In The Dark (with Jhene Aiko)", artist2, "POP", "A song from the Shang-Chi soundtrack", 5, "https://i.scdn.co/image/ab67616d0000b2735843d11205f6dd6a2ab5f967"));
 
         return songs;
     }

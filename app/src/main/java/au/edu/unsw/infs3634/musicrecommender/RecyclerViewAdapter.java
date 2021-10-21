@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,12 +88,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final LikedSong song = mLikedSongsFiltered.get(position);
         holder.songName.setText(song.getName());
+        holder.songName.setSelected(true);
         holder.artistName.setText(LikedSong.formatArtistNames(song.getArtists()));
-        holder.songGenre.setText(song.getGenre());
+        holder.artistName.setSelected(true);
+//        holder.songGenre.setText(song.getGenre());
+        holder.ratingBar.setRating(song.getRating());
         Glide.with(holder.image.getContext())
                 .load(song.getImageURL())
                 .into(holder.image);
-
     }
 
     @Override
@@ -103,6 +106,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         ImageView image;
         TextView songName, artistName, songGenre;
+        RatingBar ratingBar;
         ClickListener listener;
 
         public ViewHolder(View itemView, ClickListener listener) {
@@ -110,7 +114,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             image = itemView.findViewById(R.id.ivImage);
             songName = itemView.findViewById(R.id.tvSongName);
             artistName = itemView.findViewById(R.id.tvArtist);
-            songGenre = itemView.findViewById(R.id.tvGenre);
+//            songGenre = itemView.findViewById(R.id.tvGenre);
+            ratingBar = itemView.findViewById(R.id.ratingBarList);
             itemView.setOnClickListener(this);
         }
 
@@ -134,12 +139,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     //sort by song name
                     if (sortMethod == 1) {
                         return s1.getName().compareTo(s2.getName());
+                    } else if (sortMethod == 2) {
+                        //sort by artist name
+                        return s1.getArtists().get(0).getName().compareTo(s2.getArtists().get(0).getName());
                     }
-                    //not sure how to sort by array list of artists
-//                    } else if (sortMethod == 2) {
-//                        //sort by artist name
-//                        return s1.get().compareTo(s2.getTotalConfirmed());
-//                    }
                     return s1.getName().compareTo(s2.getName());
                 }
             });
