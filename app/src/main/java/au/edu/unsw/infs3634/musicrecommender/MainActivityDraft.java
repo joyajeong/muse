@@ -112,7 +112,7 @@ public class MainActivityDraft extends AppCompatActivity {
 //    }
 
     private void getRecommendedTracks() {
-        recommendationService.getRecommendedSong(() -> {
+        recommendationService.getRecommendedSongs(() -> {
             recommendedTracks = recommendationService.getSongs();
             Glide.with(ivSongImage.getContext())
                     .load(recommendedTracks.get(0).getAlbum().getImages().get(1).getURL())

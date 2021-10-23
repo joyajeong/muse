@@ -53,7 +53,6 @@ public class DeckAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Log.d(TAG, "in getView");
         // in get view method we are inflating our layout on below line.
         View v = convertView;
         if (v == null) {
@@ -75,7 +74,7 @@ public class DeckAdapter extends BaseAdapter {
                 .load(songData.get(position).getAlbum().getImages().get(1).getURL())
                 .into(songImage);
 
-        RatingBar ratingBar = (RatingBar) v.findViewById(R.id.ratingBarCard);
+        RatingBar ratingBar = v.findViewById(R.id.ratingBarCard);
         ratingBar.setRating(2);
         numStars = 2;
         ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {

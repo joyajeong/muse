@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 public class SongListActivity extends AppCompatActivity {
     private ArrayList<LikedSong> songs;
+    private RecyclerView recyclerView;
     private RecyclerViewAdapter adapter;
     static ArrayList<LikedSong> likedSongs = new ArrayList<LikedSong>();
     private static final String TAG = "SongListActivity";
@@ -37,7 +38,12 @@ public class SongListActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Your Songs");
         getSupportActionBar().setElevation(0);
 
-        RecyclerView recyclerView = findViewById(R.id.rvSongs);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        recyclerView = findViewById(R.id.rvSongs);
         RecyclerViewAdapter.ClickListener listener = new RecyclerViewAdapter.ClickListener() {
             @Override
             public void onClick(View view, int position) {
@@ -53,25 +59,6 @@ public class SongListActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
-
-
-//        SearchView search = findViewById(R.id.searchSongs);
-//        // perform set on query text listener event
-//        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//                // do something on text submit
-//                adapter.getFilter().filter(query);
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//                //do something when text changes
-//                adapter.getFilter().filter(newText);
-//                return false;
-//            };
-//        });
     }
 
     @Override
@@ -113,15 +100,13 @@ public class SongListActivity extends AppCompatActivity {
     }
 
     private void addSongs() {
-
         ArrayList<Artist> artist1 = new ArrayList<>();
-        artist1.add(new Artist("2kxP07DLgs4xlWz8YHlvfh", "NIKI"));
-
+        String[] genres = {"pop"};
+        artist1.add(new Artist("4yvcSjfu4PC0CYQyLy4wSq", "Glass Animals", genres));
         ArrayList<Artist> artist2 = new ArrayList<>();
-        artist2.add(new Artist("1zNqQNIdeOUZHb8zbZRFMX", "Swan Lee"));
-        artist2.add(new Artist("5ZS223C6JyBfXasXxrRqOk", "Jhene Aiko"));
-        likedSongs.add(new LikedSong("06nIuUCXydh4DcVfFhJa4R", "Every Summertime", artist1, "POP", "A song from the Shang-Chi soundtrack", 4, "https://i.scdn.co/image/ab67616d0000b2735843d11205f6dd6a2ab5f967"));
+        artist2.add(new Artist("1zNqQNIdeOUZHb8zbZRFMX", "Swan Lee", genres));
+        artist2.add(new Artist("5ZS223C6JyBfXasXxrRqOk", "Jhene Aiko", genres));
+        likedSongs.add(new LikedSong("3USxtqRwSYz57Ewm6wWRMp", "Heat Waves", artist1, "POP", "A song called Heat Waves by Glass Animals in the album Dreamland", 4, "https://i2.wp.com/marvelousgeeksmedia.com/wp-content/uploads/2021/05/heat-waves-1615254349.jpeg?ssl=1"));
         likedSongs.add(new LikedSong("0zaoWwS8RpE3LSDdmkg8TC", "In The Dark (with Jhene Aiko)", artist2, "POP", "A song from the Shang-Chi soundtrack", 5, "https://i.scdn.co/image/ab67616d0000b2735843d11205f6dd6a2ab5f967"));
-
     }
 }

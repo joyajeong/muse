@@ -4,23 +4,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.SearchView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.daprlabs.cardstack.SwipeDeck;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -29,14 +22,13 @@ import java.util.TimeZone;
 //Swiping feature source code from https://github.com/aaronbond/Swipe-Deck
 
 public class MainActivity extends AppCompatActivity {
-    // on below line we are creating variable
-    // for our array list and swipe deck.
+
     private SwipeDeck cardStack;
     private ArrayList<Song> recommendedTracks;
     private RecommendationService recommendationService;
+    private ArtistService artistService;
     private static final String TAG = "MainActivity";
     private ArrayList<LikedSong> likedSongs = SongListActivity.likedSongs;
-//    BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: Starting launch");
         // on below line we are initializing our array list and swipe deck.
         recommendationService = new RecommendationService(getApplicationContext());
-        getRecommendedTracks();
+        getRecommendedSongs();
         cardStack = (SwipeDeck) findViewById(R.id.swipe_deck);
 
         //Display personalised menu title
@@ -57,9 +49,9 @@ public class MainActivity extends AppCompatActivity {
         Log.i("current time: ", localTime);
         String greeting = "Hello";
         //need to check this
-        if (currentTime >= 1200) {
+        if (currentTime >= 1200 && currentTime < 1800) {
             greeting = "Good Afternoon";
-        } else if (currentTime > 1759) {
+        } else if (currentTime >= 1800) {
             greeting = "Good Night";
         } else if (currentTime >= 0 && currentTime < 1200) {
             greeting = "Good Morning";
@@ -67,11 +59,6 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
         getSupportActionBar().setTitle(greeting + ", " + sharedPreferences.getString("display_name", "No User"));
         getSupportActionBar().setElevation(0);
-
-        //Bottom navigation
-//        bottomNavigationView = findViewById(R.id.bottomNavigationView);
-//        bottomNavigationView.setOnNavigationItemSelectedListener(this);
-//        bottomNavigationView.setSelectedItemId(R.id.person);
 
         //When user wants to go to their list of songs
         Button btnToSongList = findViewById(R.id.btnToList);
@@ -83,50 +70,58 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // on below line we are setting event callback to our card stack.
+        //Setting event callback to the card stack.
         cardStack.setEventCallback(new SwipeDeck.SwipeEventCallback() {
             @Override
-            public void cardSwipedLeft(int position) {
-                // on card swipe left we are displaying a toast message.
-//                Toast.makeText(SwipePracticeActivity.this, "Card Swiped Left", Toast.LENGTH_SHORT).show();
+            public void cardSwipedRight(int position) {
+                Song currentSong = recommendedTracks.get(position);
+                String description = "A song called " + currentSong.getName() + " by "
+                        + LikedSong.formatArtistNames(currentSong.getArtists()) + " in the album "
+                        + currentSong.getAlbum().getName();
+
+                //Check that a rating has been chosen before adding to Liked Songs list
+                //AND that the song doesn't already exist in their list
+                if (DeckAdapter.numStars > 0 && noDuplicates(currentSong.getId())) {
+                    likedSongs.add(new LikedSong(currentSong.getId(), currentSong.getName(),
+                            currentSong.getArtists(), "POP", description, DeckAdapter.numStars,
+                            currentSong.getAlbum().getImages().get(1).getURL()));
+                    showToast("Song added");
+//                    artistService = new ArtistService(getApplicationContext());
+//                    getArtist(currentSong.getArtists());
+                } else {
+                    //This doesnt go with the noDuplicates thing
+                    showToast("Please give the song a rating");
+                }
             }
 
             @Override
-            public void cardSwipedRight(int position) {
-                // on card swiped to right we are displaying a toast message.
-                if (DeckAdapter.numStars > 0) {
-                    likedSongs.add(new LikedSong(recommendedTracks.get(position).getId(),
-                            recommendedTracks.get(position).getName(), recommendedTracks.get(position).getArtists(),
-                            "POP", "sample dec", DeckAdapter.numStars,
-                            recommendedTracks.get(position).getAlbum().getImages().get(1).getURL()));
-                    showToast("Song added");
-                } else {
-                    showToast("Please give the song a rating");
-                }
+            public void cardSwipedLeft(int position) {
+
             }
 
             @Override
             public void cardsDepleted() {
                 // this method is called when no card is present
                 Toast.makeText(MainActivity.this, "No more songs present", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "cardsDepleted: creating new recommendations...");
+                recommendationService.emptySongs();
+                getRecommendedSongs();
             }
 
             @Override
             public void cardActionDown() {
-                // this method is called when card is swipped down.
-                Log.i("TAG", "CARDS MOVED DOWN");
+
             }
 
             @Override
             public void cardActionUp() {
-                // this method is called when card is moved up.
-                Log.i("TAG", "CARDS MOVED UP");
+
             }
         });
     }
 
-    private void getRecommendedTracks() {
-        recommendationService.getRecommendedSong(() -> {
+    private void getRecommendedSongs() {
+        recommendationService.getRecommendedSongs(() -> {
             recommendedTracks = recommendationService.getSongs();
 
             // on below line we are creating a variable for our adapter class and passing array list to it.
@@ -137,6 +132,21 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private boolean noDuplicates(String id) {
+        ArrayList<String> trackIDs = new ArrayList<>();
+        for (int i = 0; i < LikedSong.getLikedSongs().size(); i++) {
+            trackIDs.add(LikedSong.getLikedSongs().get(i).getId());
+        }
+        if (trackIDs.contains(id)) {
+            return false;
+        }
+        return true;
+    }
+//    private void getArtist(ArrayList<Artist> artists) {
+//        artistService.getArtist(artists.get(0) -> {
+//            Artist a = artistService.getArtists();
+//        });
+//    }
     private void showToast(String message) {
         Toast toast= Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
         toast.show();

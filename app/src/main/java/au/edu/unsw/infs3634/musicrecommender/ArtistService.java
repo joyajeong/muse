@@ -32,26 +32,22 @@ public class ArtistService {
         queue = Volley.newRequestQueue(context);
     }
 
-    public ArrayList<Song> getSongs() {
-        return songs;
-    }
-
     public ArrayList<Artist> getArtists() {
         return artists;
     }
 
-    public ArrayList<Song> getArtistTopTracks(final VolleyCallBack callBack) {
-        String endpoint = "https://api.spotify.com/v1/artists/6M2wZ9GZgrQXHCFfjv46we/top-tracks?market=AU";
+    public ArrayList<Song> getArtist(final VolleyCallBack callBack, Artist artist) {
+        String URL = "https://api.spotify.com/v1/artists/0TnOYISbd1XYRBk9myaseg" + artist.getId();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, endpoint, null, response -> {
+                (Request.Method.GET, URL, null, response -> {
                     Gson gson = new Gson();
-                    JSONArray jsonArray = response.optJSONArray("tracks");
+                    JSONArray jsonArray = response.optJSONArray("");
                     for (int n = 0; n < jsonArray.length(); n++) {
                         try {
                             JSONObject object = jsonArray.getJSONObject(n);
-                            Song song = gson.fromJson(object.toString(), Song.class);
-                            Log.i("test", song.toString());
-                            songs.add(song);
+                            Artist a = gson.fromJson(object.toString(), Artist.class);
+                            Log.i("test", a.toString());
+                            artists.add(a);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

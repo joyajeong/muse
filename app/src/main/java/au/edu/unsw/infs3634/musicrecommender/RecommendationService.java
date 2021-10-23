@@ -35,37 +35,46 @@ public class RecommendationService {
         return songs;
     }
 
-    public ArrayList<Artist> getArtists() {
+    public void emptySongs() {
+        songs.removeAll(songs);
+    }
+
+    //Gets the artists of the latest two liked songs
+    private String[] getSeedArtists() {
+        //Default artists when user has not liked any songs yet
+        String artists[] = {"1zNqQNIdeOUZHb8zbZRFMX", "5ZS223C6JyBfXasXxrRqOk"};
+        if (LikedSong.getLikedSongs().size() > 0) {
+            Log.i("In RecommendationService", " getting latest seed artists ");
+            for (int i = 1; i < 3; i++) {
+                artists[i-1] = LikedSong.getLikedSongs().get(LikedSong.getLikedSongs().size() - i).getArtists().get(0).getId();
+            }
+        }
         return artists;
     }
 
-    private String seedArtists[] = {"1zNqQNIdeOUZHb8zbZRFMX", "5ZS223C6JyBfXasXxrRqOk"};
+    //Gets the latest two liked tracks
+    private String[] getSeedTracks() {
+        //Default songs when user has not liked any songs yet
+        String tracks[] = {"0zaoWwS8RpE3LSDdmkg8TC", "06nIuUCXydh4DcVfFhJa4R"};
 
-    private String seedTracks[] = {"0zaoWwS8RpE3LSDdmkg8TC"};
-
-    private String[] getSeedArtists() {
-        for (int i = 0; i < LikedSong.getLikedSongs().size(); i++) {
-            seedArtists[i] = LikedSong.getLikedSongs().get(i).getArtists().get(i).getId();
+        if (LikedSong.getLikedSongs().size() > 0) {
+            for (int i = 1; i < 3; i++) {
+                tracks[i-1] = LikedSong.getLikedSongs().get(LikedSong.getLikedSongs().size()-i).getId();
+            }
         }
-        return seedArtists;
+        return tracks;
     }
 
-    public ArrayList<Song> getRecommendedSong(final VolleyCallBack callBack) {
-        String URL;
-//        if (LikedSong.getLikedSongs().size() > 1) {
-//            //how to add as many seed artists/tracks as i want
-//            Log.i("where", "in getting seeds");
-//            seedArtists = getSeedArtists();
-//            getRequest = "https://api.spotify.com/v1/recommendations?limit=1&market=AU"
-//                    + "&seed_artists=" + seedArtists[0] + "%2C" + seedArtists[1]
-//                    + "&seed_genres=" + "pop"
-//                    + "&seed_tracks=" + seedTracks[0];
-//        } else {
-        URL = "https://api.spotify.com/v1/recommendations?limit=10&market=AU"
+    public ArrayList<Song> getRecommendedSongs(final VolleyCallBack callBack) {
+        //The limit for the number of seeds (e.g. artists, tracks, genres) is 5.
+        //Therefore, 2 artists, 2 tracks and 1 genre is chosen
+        String seedArtists[] = getSeedArtists();
+        String seedTracks[] = getSeedTracks();
+
+        String URL = "https://api.spotify.com/v1/recommendations?limit=10&market=AU"
                 + "&seed_artists=" + seedArtists[0] + "%2C" + seedArtists[1]
                 + "&seed_genres=" + "pop"
-                + "&seed_tracks=" + seedTracks[0];
-//    }
+                + "&seed_tracks=" + seedTracks[0] + "%2C" + seedTracks[0];
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, URL, null, response -> {

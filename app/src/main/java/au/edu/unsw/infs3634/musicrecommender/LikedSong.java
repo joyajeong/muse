@@ -14,6 +14,7 @@ public class LikedSong {
     private String description;
     private int rating;
     private String imageURL;
+    private static final String TAG = "LikedSong";
 
     public LikedSong(String id, String name, ArrayList<Artist> artists, String genre, String description, int rating, String imageURL) {
         this.id = id;
@@ -79,19 +80,7 @@ public class LikedSong {
 
 
     public static ArrayList<LikedSong> getLikedSongs() {
-        Log.i("Where", "in getLikedSongs()");
-
         ArrayList<LikedSong> songs = SongListActivity.likedSongs;
-//        ArrayList<Artist> artist1 = new ArrayList<>();
-//        artist1.add(new Artist("2kxP07DLgs4xlWz8YHlvfh", "NIKI"));
-//
-//        ArrayList<Artist> artist2 = new ArrayList<>();
-//        artist2.add(new Artist("1zNqQNIdeOUZHb8zbZRFMX", "Swan Lee"));
-//        artist2.add(new Artist("5ZS223C6JyBfXasXxrRqOk", "Jhene Aiko"));
-//
-//        songs.add(new LikedSong("06nIuUCXydh4DcVfFhJa4R", "Every Summertime", artist1, "POP", "A song from the Shang-Chi soundtrack", 4, "https://i.scdn.co/image/ab67616d0000b2735843d11205f6dd6a2ab5f967"));
-//        songs.add(new LikedSong("0zaoWwS8RpE3LSDdmkg8TC", "In The Dark (with Jhene Aiko)", artist2, "POP", "A song from the Shang-Chi soundtrack", 5, "https://i.scdn.co/image/ab67616d0000b2735843d11205f6dd6a2ab5f967"));
-
         return songs;
     }
 
@@ -100,12 +89,12 @@ public class LikedSong {
         ArrayList<LikedSong> list = getLikedSongs();
         for (LikedSong s : list) {
             if (s.getId().equals(id)) {
-                Log.i("Match?", "match found");
-                Log.i("Song name", s.getName());
+                Log.d(TAG, "Match found");
+                Log.d(TAG, "Song name: " + s.getName());
                 return s;
             }
         }
-        Log.i("Where", "end of getLikedSongs() -> no matches");
+        Log.d(TAG, "At end of getLikedSongs() -> no matches");
         return null;
     }
 
@@ -119,11 +108,5 @@ public class LikedSong {
                 .replace("]", "")  //remove the left bracket
                 .trim();           //remove trailing spaces from partially initialized arrays
         return names;
-    }
-
-    @Override
-    public String toString() {
-        return "song name: " + this.getName() +
-                ", song artist: " + this.getArtists();
     }
 }

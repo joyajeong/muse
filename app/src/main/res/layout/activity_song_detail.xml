@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_gray"
+    android:background="@drawable/gradient_background"
+    android:id="@+id/detailScreen"
     tools:context=".SongDetailActivity">
 
     <TextView
@@ -52,9 +53,9 @@
 
     <TextView
         android:id="@+id/tvDescription"
-        android:layout_width="wrap_content"
+        android:layout_width="270dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="24dp"
         android:text="TextView"
         android:textColor="@color/secondary_text"
         app:layout_constraintStart_toStartOf="@+id/tvGenreName"
@@ -73,27 +74,28 @@
 
     <RatingBar
         android:id="@+id/songRating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:isIndicator="true"
-        android:numStars="5"
+        android:layout_width="244dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="112dp"
+        android:isIndicator="false"
+        android:progressBackgroundTint="@color/lighter_gray"
+        android:progressTint="@color/star_selected"
         android:scaleX=".5"
         android:scaleY=".5"
         android:stepSize="1"
         android:transformPivotX="0dp"
         android:transformPivotY="0dp"
-        android:progressBackgroundTint="@color/lighter_gray"
-        android:progressTint="@color/star_selected"
-        app:layout_constraintStart_toStartOf="@+id/tvDescription"
-        app:layout_constraintTop_toBottomOf="@+id/tvDescription" />
+        app:layout_constraintStart_toEndOf="@+id/tvGenreName"
+        app:layout_constraintTop_toTopOf="@+id/tvGenreName" />
 
     <Button
         android:id="@+id/btnAddLib"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:text="Add to Spotify Library"
-        app:layout_constraintStart_toStartOf="@+id/songRating"
-        app:layout_constraintTop_toBottomOf="@+id/songRating" />
+        app:layout_constraintEnd_toEndOf="@+id/tvDescription"
+        app:layout_constraintHorizontal_bias="0.511"
+        app:layout_constraintStart_toStartOf="@+id/tvDescription"
+        app:layout_constraintTop_toBottomOf="@+id/tvDescription" />
 </androidx.constraintlayout.widget.ConstraintLayout>
