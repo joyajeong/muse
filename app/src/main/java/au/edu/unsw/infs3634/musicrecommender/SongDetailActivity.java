@@ -1,8 +1,14 @@
 package au.edu.unsw.infs3634.musicrecommender;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.palette.graphics.Palette;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +19,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -20,6 +29,7 @@ public class SongDetailActivity extends AppCompatActivity {
 
     public static LikedSong selectedSong;
     private AddToLibraryService addToLibraryService;
+    private static final String TAG = "SongDetailActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +42,9 @@ public class SongDetailActivity extends AppCompatActivity {
         String selectedSongId = bundle.getString("SONG_ID");
         selectedSong = LikedSong.getLikedSong(selectedSongId);
         Log.i("name of song clicked in detail activity", selectedSong.getName());
+
+        //Set title of activity
+        getSupportActionBar().setTitle("");
 
         TextView songName = findViewById(R.id.tvSongNameDetail);
         TextView artistNames = findViewById(R.id.tvArtistNames);
@@ -59,5 +72,9 @@ public class SongDetailActivity extends AppCompatActivity {
             }
         });
 
+
     }
+
+
+
 }

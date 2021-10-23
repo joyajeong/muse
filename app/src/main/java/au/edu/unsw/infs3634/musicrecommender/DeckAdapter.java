@@ -58,7 +58,7 @@ public class DeckAdapter extends BaseAdapter {
         View v = convertView;
         if (v == null) {
             // on below line we are inflating our layout.
-            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.song_rv_item, parent, false);
+            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.song_card_item, parent, false);
         }
 
         // on below line we are initializing our variables and setting data to our variables.

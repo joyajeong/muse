@@ -5,22 +5,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.RatingBar;
 import android.widget.SearchView;
-import android.widget.Toast;
+
 import java.util.ArrayList;
 
 public class SongListActivity extends AppCompatActivity {
     private ArrayList<LikedSong> songs;
     private RecyclerViewAdapter adapter;
     static ArrayList<LikedSong> likedSongs = new ArrayList<LikedSong>();
+    private static final String TAG = "SongListActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +33,11 @@ public class SongListActivity extends AppCompatActivity {
             addSongs();
         }
 
-        RecyclerView recyclerView = findViewById(R.id.rvSongs);
+        //Set title of menu
+        getSupportActionBar().setTitle("Your Songs");
+        getSupportActionBar().setElevation(0);
 
+        RecyclerView recyclerView = findViewById(R.id.rvSongs);
         RecyclerViewAdapter.ClickListener listener = new RecyclerViewAdapter.ClickListener() {
             @Override
             public void onClick(View view, int position) {
@@ -50,6 +53,25 @@ public class SongListActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
+
+
+//        SearchView search = findViewById(R.id.searchSongs);
+//        // perform set on query text listener event
+//        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                // do something on text submit
+//                adapter.getFilter().filter(query);
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                //do something when text changes
+//                adapter.getFilter().filter(newText);
+//                return false;
+//            };
+//        });
     }
 
     @Override
@@ -57,6 +79,7 @@ public class SongListActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_song_list, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
+        searchView.setQueryHint("Search for songs");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {

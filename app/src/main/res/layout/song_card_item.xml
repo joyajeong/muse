@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:layout_margin="5dp"
     android:elevation="8dp"
+    app:cardBackgroundColor="@color/lighter_gray"
     app:cardCornerRadius="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="533dp"
+        android:layout_height="516dp"
         android:layout_margin="3dp"
         android:orientation="vertical"
         android:padding="5dp">
@@ -32,7 +32,7 @@
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
             android:singleLine="true"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="20sp" />
 
         <TextView
@@ -47,7 +47,7 @@
             android:padding="3dp"
             android:scrollHorizontally="true"
             android:singleLine="true"
-            android:textColor="@color/black" />
+            android:textColor="@color/secondary_text" />
 
         <RatingBar
             android:id="@+id/ratingBarCard"
@@ -57,6 +57,8 @@
             android:layout_marginEnd="4dp"
             android:isIndicator="false"
             android:numStars="5"
+            android:progressBackgroundTint="@color/star_background"
+            android:progressTint="@color/star_selected"
             android:scaleX=".5"
             android:scaleY=".5"
             android:stepSize="1"

@@ -13,10 +13,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MusicRecommender">
         <activity
-            android:name=".SwipePracticeActivity"
+            android:name=".MainActivity"
             android:exported="true" />
         <activity
-            android:name=".MainActivity"
+            android:name=".MainActivityDraft"
             android:exported="true" />
         <activity
             android:name=".SongDetailActivity"

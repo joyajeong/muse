@@ -1,137 +1,160 @@
 package au.edu.unsw.infs3634.musicrecommender;
 
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.RatingBar;
-import android.widget.TextView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
+import com.daprlabs.cardstack.SwipeDeck;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
+//Swiping feature source code from https://github.com/aaronbond/Swipe-Deck
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
-    private TextView userView;
-    private TextView tvRecSongName, tvRecArtistName;
-    private ImageView ivSongImage;
-    private Button addBtn;
-    private Song song;
-    private int numStars;
-
-    private ArtistService artistService;
+    // on below line we are creating variable
+    // for our array list and swipe deck.
+    private SwipeDeck cardStack;
+    private ArrayList<Song> recommendedTracks;
     private RecommendationService recommendationService;
-    private ArrayList<Song> recentlyPlayedTracks, recommendedTracks;
-    private ArrayList<Artist> artists;
-    private ArrayList<Song> songs;
+    private static final String TAG = "MainActivity";
     private ArrayList<LikedSong> likedSongs = SongListActivity.likedSongs;
+//    BottomNavigationView bottomNavigationView;
 
-//    private String recSongId, recSongName, recSongArtist, recSongGenre,
-//            recSongDesc, recSongRating, recSongImageURL;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate: Starting launch");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        artistService = new ArtistService(getApplicationContext());
+        Log.d(TAG, "onCreate: Starting launch");
+        // on below line we are initializing our array list and swipe deck.
         recommendationService = new RecommendationService(getApplicationContext());
-        tvRecSongName = (TextView) findViewById(R.id.tvRecSongName);
-        tvRecSongName.setSelected(true);
-        tvRecArtistName = (TextView) findViewById(R.id.tvRecArtistName);
-        tvRecArtistName.setSelected(true);
-        ivSongImage = findViewById(R.id.ivRecSongImage);
-        SharedPreferences sharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
         getRecommendedTracks();
+        cardStack = (SwipeDeck) findViewById(R.id.swipe_deck);
 
-        final RatingBar ratingBar = (RatingBar) findViewById(R.id.ratingBarCard);
-        numStars = 0;
-        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            @Override
-            public void onRatingChanged(RatingBar arg0, float rateValue, boolean arg2) {
-                Log.d("Rating", "your selected value is :"+rateValue);
-                numStars = Math.round(rateValue);
-            }
-        });
+        //Display personalised menu title
+        Date currentLocalTime = Calendar.getInstance().getTime();
+        DateFormat date = new SimpleDateFormat("HHmm");
+        date.setTimeZone(TimeZone.getTimeZone("GMT+11"));
+        String localTime = date.format(currentLocalTime);
+        int currentTime = Integer.parseInt(localTime);
+        Log.i("current time: ", localTime);
+        String greeting = "Hello";
+        //need to check this
+        if (currentTime >= 1200) {
+            greeting = "Good Afternoon";
+        } else if (currentTime > 1759) {
+            greeting = "Good Night";
+        } else if (currentTime >= 0 && currentTime < 1200) {
+            greeting = "Good Morning";
+        }
+        SharedPreferences sharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
+        getSupportActionBar().setTitle(greeting + ", " + sharedPreferences.getString("display_name", "No User"));
+        getSupportActionBar().setElevation(0);
 
-        Button btnAdd = findViewById(R.id.btnAdd);
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // i should make these recommendedTracks.get(0)...into variables so i can use it more easily
-                if (numStars > 0) {
-                    likedSongs.add(new LikedSong(recommendedTracks.get(0).getId(),
-                            recommendedTracks.get(0).getName(), recommendedTracks.get(0).getArtists(),
-                            "POP", "sample dec", numStars,
-                            recommendedTracks.get(0).getAlbum().getImages().get(1).getURL()));
-                    Intent intent = new Intent(MainActivity.this, SongListActivity.class);
-                    startActivity(intent);
-                } else {
-                    showToast("Please give the song a rating");
-                }
-            }
-        });
+        //Bottom navigation
+//        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+//        bottomNavigationView.setOnNavigationItemSelectedListener(this);
+//        bottomNavigationView.setSelectedItemId(R.id.person);
 
-        Button btnAnotherSong = findViewById(R.id.btnAnotherSong);
-        btnAnotherSong.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                recommendationService = new RecommendationService(getApplicationContext());
-                getRecommendedTracks();
-            }
-        });
-
-        Button btnSongs = findViewById(R.id.btnSongs);
-        btnSongs.setOnClickListener(new View.OnClickListener() {
+        //When user wants to go to their list of songs
+        Button btnToSongList = findViewById(R.id.btnToList);
+        btnToSongList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, SwipePracticeActivity.class);
+                Intent intent = new Intent(MainActivity.this, SongListActivity.class);
                 startActivity(intent);
             }
         });
 
-    }
+        // on below line we are setting event callback to our card stack.
+        cardStack.setEventCallback(new SwipeDeck.SwipeEventCallback() {
+            @Override
+            public void cardSwipedLeft(int position) {
+                // on card swipe left we are displaying a toast message.
+//                Toast.makeText(SwipePracticeActivity.this, "Card Swiped Left", Toast.LENGTH_SHORT).show();
+            }
 
-//    private void getTracks1() {
-//        artistService.getArtistTopTracks(() -> {
-//            recentlyPlayedTracks = artistService.getSongs();
-//            songView.setText(recentlyPlayedTracks.get(0).getName());
-//            songView1.setText(recentlyPlayedTracks.get(1).getName());
-//            songView2.setText(recentlyPlayedTracks.get(2).getName());
-//            Log.i("artists", recentlyPlayedTracks.get(0).getArtists().get(0).getName());
-//
-//        });
-//    }
+            @Override
+            public void cardSwipedRight(int position) {
+                // on card swiped to right we are displaying a toast message.
+                if (DeckAdapter.numStars > 0) {
+                    likedSongs.add(new LikedSong(recommendedTracks.get(position).getId(),
+                            recommendedTracks.get(position).getName(), recommendedTracks.get(position).getArtists(),
+                            "POP", "sample dec", DeckAdapter.numStars,
+                            recommendedTracks.get(position).getAlbum().getImages().get(1).getURL()));
+                    showToast("Song added");
+                } else {
+                    showToast("Please give the song a rating");
+                }
+            }
+
+            @Override
+            public void cardsDepleted() {
+                // this method is called when no card is present
+                Toast.makeText(MainActivity.this, "No more songs present", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void cardActionDown() {
+                // this method is called when card is swipped down.
+                Log.i("TAG", "CARDS MOVED DOWN");
+            }
+
+            @Override
+            public void cardActionUp() {
+                // this method is called when card is moved up.
+                Log.i("TAG", "CARDS MOVED UP");
+            }
+        });
+    }
 
     private void getRecommendedTracks() {
         recommendationService.getRecommendedSong(() -> {
             recommendedTracks = recommendationService.getSongs();
-            Glide.with(ivSongImage.getContext())
-                    .load(recommendedTracks.get(0).getAlbum().getImages().get(1).getURL())
-                    .into(ivSongImage);
-            tvRecSongName.setText(recommendedTracks.get(0).getName());
-            tvRecArtistName.setText(LikedSong.formatArtistNames(recommendedTracks.get(0).getArtists()));
-            Log.i("artists", recommendedTracks.get(0).getArtists().get(0).getName());
+
+            // on below line we are creating a variable for our adapter class and passing array list to it.
+            final DeckAdapter adapter = new DeckAdapter(recommendedTracks, getApplicationContext());
+
+            // on below line we are setting adapter to our card stack.
+            cardStack.setAdapter(adapter);
         });
     }
-
-//    private void updateSong() {
-//        if (recentlyPlayedTracks.size() > 0) {
-//            songView.setText(recentlyPlayedTracks.get(0).getName());
-//            song = recentlyPlayedTracks.get(0);
-//        }
-//    }
 
     private void showToast(String message) {
         Toast toast= Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
         toast.show();
     }
+
+//    @Override
+//    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//
+//        switch (item.getItemId()) {
+//            case R.id.person:
+//                Log.i("TAG", "person");
+//                return true;
+//            case R.id.home:
+//                Log.i("TAG", "home");
+//                Intent intent = new Intent(MainActivity.this, SongListActivity.class);
+//                startActivity(intent);
+//                return true;
+//        }
+//        return false;
+//    }
 }
