@@ -32,6 +32,7 @@ public class SongListActivity extends AppCompatActivity implements BottomNavigat
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song_list);
 
+        Log.d(TAG, "onCreate() number of liked songs: " + String.valueOf(likedSongs.size()));
         //Only add the initial songs once
         //need to fix this
         if (likedSongs.size() < 5) {
@@ -64,6 +65,8 @@ public class SongListActivity extends AppCompatActivity implements BottomNavigat
                 startActivity(intent);
             }
         };
+        Log.d(TAG, "onStart() number of liked songs: " + String.valueOf(likedSongs.size()));
+
         adapter = new RecyclerViewAdapter(likedSongs, listener);
         recyclerView.setAdapter(adapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -160,7 +163,7 @@ public class SongListActivity extends AppCompatActivity implements BottomNavigat
         Album album1 = new Album("2kAqjStKcwlDD59H0llhGC", artist2, image1, "Shang-Chi and The Legend of The Ten Rings: The Album");
         Album album2 = new Album("5bfpRtBW7RNRdsm3tRyl3R", artist1, image2, "Dreamland");
 
-        likedSongs.add(new LikedSong("3USxtqRwSYz57Ewm6wWRMp", "Heat Waves", artist1, "POP", "A song called Heat Waves by Glass Animals in the album Dreamland", 4, "https://i2.wp.com/marvelousgeeksmedia.com/wp-content/uploads/2021/05/heat-waves-1615254349.jpeg?ssl=1"));
-        likedSongs.add(new LikedSong("0zaoWwS8RpE3LSDdmkg8TC", "In The Dark (with Jhene Aiko)", artist2,"POP", "A song from the Shang-Chi soundtrack", 5, "https://i.scdn.co/image/ab67616d0000b2735843d11205f6dd6a2ab5f967"));
+        likedSongs.add(new LikedSong("3USxtqRwSYz57Ewm6wWRMp", "Heat Waves", artist1, album2,"POP", "A song called Heat Waves by Glass Animals in the album Dreamland", 4, "https://i2.wp.com/marvelousgeeksmedia.com/wp-content/uploads/2021/05/heat-waves-1615254349.jpeg?ssl=1"));
+        likedSongs.add(new LikedSong("0zaoWwS8RpE3LSDdmkg8TC", "In The Dark (with Jhene Aiko)", artist2, album1,"POP", "A song from the Shang-Chi soundtrack", 5, "https://i.scdn.co/image/ab67616d0000b2735843d11205f6dd6a2ab5f967"));
     }
 }

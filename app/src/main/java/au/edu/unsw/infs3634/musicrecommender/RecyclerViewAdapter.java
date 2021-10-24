@@ -38,6 +38,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private static final String TAG = "RecyclerViewAdapter";
 
     public RecyclerViewAdapter(ArrayList<LikedSong> likedSongs, ClickListener listener) {
+        Log.d(TAG, "adapter number of liked songs: " + String.valueOf(likedSongs.size()));
         this.mLikedSongs = likedSongs;
         this.mLikedSongsFiltered = likedSongs;
         this.mClickListener = listener;
@@ -96,7 +97,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Log.d(TAG, "In onBindViewHolder");
         final LikedSong song = mLikedSongsFiltered.get(position);
         holder.songName.setText(song.getName());
         holder.songName.setSelected(true);

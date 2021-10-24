@@ -74,10 +74,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 //Check that a rating has been chosen before adding to Liked Songs list
                 //AND that the song doesn't already exist in their list
                 if (DeckAdapter.numStars > 0 && noDuplicates(currentSong.getId())) {
+                    //put this in a separate method
                     likedSongs.add(new LikedSong(currentSong.getId(), currentSong.getName(),
-                            currentSong.getArtists(), "POP", description, DeckAdapter.numStars,
+                            currentSong.getArtists(), currentSong.getAlbum(), "POP", description, DeckAdapter.numStars,
                             currentSong.getAlbum().getImages().get(1).getURL()));
                     showToast("Song added");
+                    Log.d(TAG, "number of liked songs: " + String.valueOf(likedSongs.size()));
+
 //                    artistService = new ArtistService(getApplicationContext());
 //                    getArtist();
                 } else {

@@ -6,46 +6,46 @@ import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class LikedSong {
-    private String id;
-    private String name;
-    private ArrayList<Artist> artists;
+public class LikedSong extends Song {
+//    private String id;
+//    private String name;
+//    private ArrayList<Artist> artists;
     private String genre;
     private String description;
     private int rating;
     private String imageURL;
     private static final String TAG = "LikedSong";
 
-    public LikedSong(String id, String name, ArrayList<Artist> artists, String genre, String description, int rating, String imageURL) {
-//        super(id, name, artists, album);
-        this.id = id;
-        this.name = name;
-        this.artists = artists;
+    public LikedSong(String id, String name, ArrayList<Artist> artists, Album album, String genre, String description, int rating, String imageURL) {
+        super(id, name, artists, album);
+//        this.id = id;
+//        this.name = name;
+//        this.artists = artists;
         this.genre = genre;
         this.description = description;
         this.rating = rating;
         this.imageURL = imageURL;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public ArrayList<Artist> getArtists() {
-        return artists;
-    }
+//    public String getId() {
+//        return id;
+//    }
+//
+//    public void setId(String id) {
+//        this.id = id;
+//    }
+//
+//    public String getName() {
+//        return name;
+//    }
+//
+//    public void setName(String name) {
+//        this.name = name;
+//    }
+//
+//    public ArrayList<Artist> getArtists() {
+//        return artists;
+//    }
 
     public String getGenre() {
         return genre;
