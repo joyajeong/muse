@@ -62,11 +62,11 @@ public class AddToLibraryService {
     }
 
     private JSONObject preparePutPayload(LikedSong song) {
-        JSONArray idarray = new JSONArray();
-        idarray.put(song.getId());
+        JSONArray idArray = new JSONArray();
+        idArray.put(song.getId());
         JSONObject ids = new JSONObject();
         try {
-            ids.put("ids", idarray);
+            ids.put("ids", idArray);
         } catch (JSONException e) {
             e.printStackTrace();
         }

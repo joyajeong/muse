@@ -8,6 +8,16 @@
     android:id="@+id/detailScreen"
     tools:context=".SongDetailActivity">
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnBack"
+        android:layout_width="33dp"
+        android:layout_height="33dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/button_bg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/tvArtistNames"
         android:layout_width="270dp"
@@ -36,8 +46,9 @@
         android:scrollHorizontally="true"
         android:singleLine="true"
         android:text="TextView"
-        android:textSize="20sp"
         android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/ivSong"
         app:layout_constraintTop_toBottomOf="@+id/ivSong" />
 
@@ -94,8 +105,20 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:text="Add to Spotify Library"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="@+id/tvDescription"
         app:layout_constraintHorizontal_bias="0.511"
         app:layout_constraintStart_toStartOf="@+id/tvDescription"
         app:layout_constraintTop_toBottomOf="@+id/tvDescription" />
+
+    <Button
+        android:id="@+id/btnFollow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:text="Follow Artists"
+        app:layout_constraintStart_toStartOf="@+id/btnAddLib"
+        app:layout_constraintTop_toBottomOf="@+id/btnAddLib" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

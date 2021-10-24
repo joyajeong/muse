@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/person"
-        android:title="Person"
+        android:id="@+id/recommendations"
+        android:title="Recommendations"
         android:icon="@drawable/ic_baseline_music_note_24"/>
     <item
-        android:id="@+id/home"
-        android:title="Home"
-        android:icon="@drawable/ic_baseline_search_24"/>
+        android:id="@+id/yourSongs"
+        android:title="Your Songs"
+        android:icon="@drawable/ic_baseline_star_24"/>
 </menu>

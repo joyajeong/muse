@@ -68,10 +68,7 @@ public class MainActivityDraft extends AppCompatActivity {
             public void onClick(View view) {
                 // i should make these recommendedTracks.get(0)...into variables so i can use it more easily
                 if (numStars > 0) {
-                    likedSongs.add(new LikedSong(recommendedTracks.get(0).getId(),
-                            recommendedTracks.get(0).getName(), recommendedTracks.get(0).getArtists(),
-                            "POP", "sample dec", numStars,
-                            recommendedTracks.get(0).getAlbum().getImages().get(1).getURL()));
+
                     Intent intent = new Intent(MainActivityDraft.this, SongListActivity.class);
                     startActivity(intent);
                 } else {

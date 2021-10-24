@@ -54,7 +54,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 } else {
                     ArrayList<LikedSong> filteredList = new ArrayList<>();
                     for (LikedSong s : mLikedSongs) {
-                        if (s.getName().toLowerCase().contains(charString.toLowerCase())) {
+                        //Filters through the artists names
+                        for (int i = 0; i < s.getArtists().size(); i++) {
+                            if (!filteredList.contains(s) &&
+                                    s.getArtists().get(i).getName().toLowerCase().contains(charString.toLowerCase())) {
+                                filteredList.add(s);
+                            }
+                        }
+                        //Filters through the song names
+                        if (!filteredList.contains(s) &&
+                                s.getName().toLowerCase().contains(charString.toLowerCase())) {
                             filteredList.add(s);
                         }
                     }
@@ -87,6 +96,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Log.d(TAG, "In onBindViewHolder");
         final LikedSong song = mLikedSongsFiltered.get(position);
         holder.songName.setText(song.getName());
         holder.songName.setSelected(true);
@@ -125,7 +135,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         @Override
         public void onClick(View view) {
             if (mClickListener != null) mClickListener.onClick(view, getAbsoluteAdapterPosition());
-//            listener.onClick(view, (Integer) view.getTag());
         }
     }
 
@@ -139,13 +148,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             Collections.sort(mLikedSongsFiltered, new Comparator<LikedSong>() {
                 @Override
                 public int compare(LikedSong s1, LikedSong s2) {
-                    //sort by song name
                     if (sortMethod == 1) {
+                        //sort by song name
                         return s1.getName().compareTo(s2.getName());
                     } else if (sortMethod == 2) {
                         //sort by artist name
                         return s1.getArtists().get(0).getName().compareTo(s2.getArtists().get(0).getName());
+                    } else if (sortMethod == 3) {
+                        //sort by rating
+                        return -(String.valueOf(s1.getRating()).compareTo(String.valueOf((s2.getRating()))));
                     }
+                    //default sort by name
                     return s1.getName().compareTo(s2.getName());
                 }
             });

@@ -23,6 +23,7 @@
 
         <TextView
             android:id="@+id/tvSongNameCard"
+            android:fontFamily="sans-serif-light"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"

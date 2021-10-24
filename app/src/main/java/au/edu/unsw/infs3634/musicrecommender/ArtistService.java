@@ -36,8 +36,8 @@ public class ArtistService {
         return artists;
     }
 
-    public ArrayList<Song> getArtist(final VolleyCallBack callBack, Artist artist) {
-        String URL = "https://api.spotify.com/v1/artists/0TnOYISbd1XYRBk9myaseg" + artist.getId();
+    public ArrayList<Song> getArtist(final VolleyCallBack callBack) {
+        String URL = "https://api.spotify.com/v1/artists/0TnOYISbd1XYRBk9myaseg";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, URL, null, response -> {
                     Gson gson = new Gson();
@@ -69,5 +69,41 @@ public class ArtistService {
         queue.add(jsonObjectRequest);
         return songs;
     }
+
+    public void followArtist(Artist artist) {
+        JSONObject payload = preparePutPayload(artist);
+        JsonObjectRequest jsonObjectRequest = prepareFollowArtistRequest(payload);
+        queue.add(jsonObjectRequest);
+    }
+
+    private JsonObjectRequest prepareFollowArtistRequest(JSONObject payload) {
+        return new JsonObjectRequest(Request.Method.PUT, "https://api.spotify.com/v1/me/following?type=artist", payload, response -> {
+        }, error -> {
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                String token = sharedPreferences.getString("token", "");
+                String auth = "Bearer " + token;
+                headers.put("Authorization", auth);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+    }
+
+    private JSONObject preparePutPayload(Artist artist) {
+        JSONArray idArray = new JSONArray();
+        idArray.put(artist.getId());
+        Log.i("Artist ID: ", artist.getId());
+        JSONObject ids = new JSONObject();
+        try {
+            ids.put("ids", idArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return ids;
+    }
+
 }
 

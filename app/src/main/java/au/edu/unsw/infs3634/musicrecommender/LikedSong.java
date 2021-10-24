@@ -17,6 +17,7 @@ public class LikedSong {
     private static final String TAG = "LikedSong";
 
     public LikedSong(String id, String name, ArrayList<Artist> artists, String genre, String description, int rating, String imageURL) {
+//        super(id, name, artists, album);
         this.id = id;
         this.name = name;
         this.artists = artists;
@@ -77,7 +78,6 @@ public class LikedSong {
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
     }
-
 
     public static ArrayList<LikedSong> getLikedSongs() {
         ArrayList<LikedSong> songs = SongListActivity.likedSongs;

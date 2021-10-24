@@ -25,6 +25,7 @@ public class RecommendationService {
     private ArrayList<Artist> artists = new ArrayList<>();
     private SharedPreferences sharedPreferences;
     private RequestQueue queue;
+    private static final String TAG = "RecomendationService";
 
     public RecommendationService(Context context) {
         sharedPreferences = context.getSharedPreferences("SPOTIFY", 0);
@@ -44,7 +45,7 @@ public class RecommendationService {
         //Default artists when user has not liked any songs yet
         String artists[] = {"1zNqQNIdeOUZHb8zbZRFMX", "5ZS223C6JyBfXasXxrRqOk"};
         if (LikedSong.getLikedSongs().size() > 0) {
-            Log.i("In RecommendationService", " getting latest seed artists ");
+            Log.d(TAG, "Getting latest seed artists ");
             for (int i = 1; i < 3; i++) {
                 artists[i-1] = LikedSong.getLikedSongs().get(LikedSong.getLikedSongs().size() - i).getArtists().get(0).getId();
             }

@@ -4,13 +4,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.daprlabs.cardstack.SwipeDeck;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -21,12 +24,11 @@ import java.util.TimeZone;
 
 //Swiping feature source code from https://github.com/aaronbond/Swipe-Deck
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private SwipeDeck cardStack;
     private ArrayList<Song> recommendedTracks;
     private RecommendationService recommendationService;
-    private ArtistService artistService;
     private static final String TAG = "MainActivity";
     private ArrayList<LikedSong> likedSongs = SongListActivity.likedSongs;
 
@@ -60,16 +62,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(greeting + ", " + sharedPreferences.getString("display_name", "No User"));
         getSupportActionBar().setElevation(0);
 
-        //When user wants to go to their list of songs
-        Button btnToSongList = findViewById(R.id.btnToList);
-        btnToSongList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, SongListActivity.class);
-                startActivity(intent);
-            }
-        });
-
         //Setting event callback to the card stack.
         cardStack.setEventCallback(new SwipeDeck.SwipeEventCallback() {
             @Override
@@ -87,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                             currentSong.getAlbum().getImages().get(1).getURL()));
                     showToast("Song added");
 //                    artistService = new ArtistService(getApplicationContext());
-//                    getArtist(currentSong.getArtists());
+//                    getArtist();
                 } else {
                     //This doesnt go with the noDuplicates thing
                     showToast("Please give the song a rating");
@@ -118,6 +110,10 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        bottomNavigationView.setSelectedItemId(R.id.recommendations);
     }
 
     private void getRecommendedSongs() {
@@ -142,29 +138,37 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
-//    private void getArtist(ArrayList<Artist> artists) {
-//        artistService.getArtist(artists.get(0) -> {
-//            Artist a = artistService.getArtists();
+
+//    private void getArtist() {
+//        artistService.getArtist(() -> {
+//            recommendedArtists = artistService.getArtists();
+//            for (int i = 0; i < recommendedArtists.size(); i++) {
+//                for (int j = 0; j < recommendedArtists.get(i).getGenres().length; j++) {
+//                    genres.add(recommendedArtists.get(i).getGenres()[i]);
+//                    Log.d(TAG, "genres: " + recommendedArtists.get(i).getGenres()[i]);
+//                }
+//            }
 //        });
 //    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.recommendations:
+                Log.i("TAG", "recommendations selected");
+                return true;
+            case R.id.yourSongs:
+                Log.i("TAG", "your Songs");
+                Intent intent = new Intent(MainActivity.this, SongListActivity.class);
+                startActivity(intent);
+                MainActivity.this.overridePendingTransition(0, 0);
+                return true;
+        }
+        return false;
+    }
+
     private void showToast(String message) {
         Toast toast= Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
         toast.show();
     }
-
-//    @Override
-//    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-//
-//        switch (item.getItemId()) {
-//            case R.id.person:
-//                Log.i("TAG", "person");
-//                return true;
-//            case R.id.home:
-//                Log.i("TAG", "home");
-//                Intent intent = new Intent(MainActivity.this, SongListActivity.class);
-//                startActivity(intent);
-//                return true;
-//        }
-//        return false;
-//    }
 }

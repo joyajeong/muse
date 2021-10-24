@@ -8,16 +8,24 @@
         app:showAsAction="always">
         <menu>
             <item
+                android:id="@+id/sortByTitle"
                 android:checkable="false"
                 android:checked="false"
                 android:title="Sort by"
                 app:showAsAction="never" />
             <item
                 android:id="@+id/sortSongName"
+                android:icon="@drawable/ic_baseline_music_note_24"
                 android:title="Song" />
             <item
                 android:id="@+id/sortArtist"
+                android:icon="@drawable/ic_baseline_person_24"
                 android:title="Artist" />
+            <item
+                android:id="@+id/sortRating"
+                android:icon="@drawable/ic_baseline_star_24"
+                android:title="Rating" />
+
         </menu>
     </item>
     <item

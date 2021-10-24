@@ -7,6 +7,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.palette.graphics.Palette;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -18,6 +19,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -28,8 +30,9 @@ public class SongDetailActivity extends AppCompatActivity {
 
     public static LikedSong selectedSong;
     private AddToLibraryService addToLibraryService;
+    private ArtistService artistService;
     private TextView songName, artistNames, genre, description;
-    private Button btnAddLib;
+    private Button btnAddLib, btnBack, btnFollow;
     private RatingBar rating;
     private ImageView songImage;
     private Palette.Swatch vibrantSwatch;
@@ -37,7 +40,6 @@ public class SongDetailActivity extends AppCompatActivity {
     private Palette.Swatch darkMutedSwatch;
     private Palette.Swatch lightMutedSwatch;
     private int numStars;
-    Bitmap myBitmap;
     ConstraintLayout screen;
     View layout;
     private static final String TAG = "SongDetailActivity";
@@ -48,6 +50,7 @@ public class SongDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_song_detail);
 
         addToLibraryService = new AddToLibraryService(getApplicationContext());
+        artistService = new ArtistService(getApplicationContext());
 
         Bundle bundle = getIntent().getExtras();
         String selectedSongId = bundle.getString("SONG_ID");
@@ -64,6 +67,8 @@ public class SongDetailActivity extends AppCompatActivity {
         rating = findViewById(R.id.songRating);
         songImage = findViewById(R.id.ivSong);
         btnAddLib = findViewById(R.id.btnAddLib);
+        btnBack = findViewById(R.id.btnBack);
+        btnFollow = findViewById(R.id.btnFollow);
 
         Glide.with(songImage.getContext())
                 .load(selectedSong.getImageURL())
@@ -99,6 +104,10 @@ public class SongDetailActivity extends AppCompatActivity {
                 Log.d(TAG, "Your selected rating is :" + rateValue);
                 numStars = Math.round(rateValue);
                 selectedSong.setRating(numStars);
+
+                if (numStars == 0) {
+                    SongListActivity.likedSongs.remove(selectedSong);
+                }
             }
         });
 
@@ -107,6 +116,26 @@ public class SongDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 addToLibraryService.addSongToLibrary(selectedSong);
+                showToast("Song added to Spotify library");
+            }
+        });
+
+        btnFollow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                for (Artist a : selectedSong.getArtists()) {
+//                    artistService.followArtist(a);
+//                }
+                   artistService.followArtist(selectedSong.getArtists().get(0));
+
+            }
+        });
+
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SongDetailActivity.this, SongListActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -123,8 +152,6 @@ public class SongDetailActivity extends AppCompatActivity {
 //                artistNames.setTextColor(lightMutedSwatch.getRgb());
 //                genre.setTextColor(lightMutedSwatch.getRgb());
 //                description.setTextColor(lightMutedSwatch.getRgb());
-//                btnAddLib.setBackgroundColor(darkVibrantSwatch.getRgb());
-//                screen.setBackgroundColor(darkMutedSwatch.getRgb());
 
                 if (vibrantSwatch == null) {
                     vibrantSwatch = darkMutedSwatch;
@@ -135,6 +162,9 @@ public class SongDetailActivity extends AppCompatActivity {
 //                if (darkMutedSwatch == null) {
 //                    vibrantSwatch = lightMutedSwatch;
 //                }
+
+                btnAddLib.setBackgroundColor(darkVibrantSwatch.getRgb());
+
                 GradientDrawable gd = new GradientDrawable(
                         GradientDrawable.Orientation.TOP_BOTTOM,
                         new int[] {vibrantSwatch.getRgb(),0xFF131313});
@@ -144,4 +174,8 @@ public class SongDetailActivity extends AppCompatActivity {
         });
     }
 
+    private void showToast(String message) {
+        Toast toast= Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+        toast.show();
+    }
 }
