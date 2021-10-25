@@ -95,10 +95,10 @@ public class ArtistService {
     private JSONObject preparePutPayload(Artist artist) {
         JSONArray idArray = new JSONArray();
         idArray.put(artist.getId());
-        Log.i("Artist ID: ", artist.getId());
         JSONObject ids = new JSONObject();
         try {
             ids.put("ids", idArray);
+            Log.i("ArtistService: ", idArray.getString(0));
         } catch (JSONException e) {
             e.printStackTrace();
         }

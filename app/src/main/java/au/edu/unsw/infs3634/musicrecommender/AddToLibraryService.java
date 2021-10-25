@@ -38,6 +38,7 @@ public class AddToLibraryService {
         sharedPreferences = context.getSharedPreferences("SPOTIFY", 0);
         queue = Volley.newRequestQueue(context);
     }
+
     //Code sourced from https://towardsdatascience.com/using-the-spotify-api-with-your-android-application-the-essentials-1a3c1bc36b9e
     public void addSongToLibrary(LikedSong song) {
         JSONObject payload = preparePutPayload(song);

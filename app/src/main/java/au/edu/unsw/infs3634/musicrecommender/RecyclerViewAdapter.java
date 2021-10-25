@@ -36,9 +36,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ArrayList<LikedSong> mLikedSongsFiltered;
     private ClickListener mClickListener;
     private static final String TAG = "RecyclerViewAdapter";
+    public static final int SORT_SONG_NAME = 1;
+    public static final int SORT_ARTIST_NAME = 2;
+    public static final int SORT_RATING = 3;
 
     public RecyclerViewAdapter(ArrayList<LikedSong> likedSongs, ClickListener listener) {
-        Log.d(TAG, "adapter number of liked songs: " + String.valueOf(likedSongs.size()));
         this.mLikedSongs = likedSongs;
         this.mLikedSongsFiltered = likedSongs;
         this.mClickListener = listener;
@@ -50,10 +52,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @Override
             protected FilterResults performFiltering(CharSequence charSequence) {
                 String charString = charSequence.toString();
-                if(charString.isEmpty()) {
+                if (charString.isEmpty()) {
                     mLikedSongsFiltered = mLikedSongs;
                 } else {
                     ArrayList<LikedSong> filteredList = new ArrayList<>();
+                    Log.d(TAG, "search q: " + charString);
                     for (LikedSong s : mLikedSongs) {
                         //Filters through the artists names
                         for (int i = 0; i < s.getArtists().size(); i++) {
@@ -63,8 +66,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                             }
                         }
                         //Filters through the song names
-                        if (!filteredList.contains(s) &&
-                                s.getName().toLowerCase().contains(charString.toLowerCase())) {
+                        if (!filteredList.contains(s) && s.getName().toLowerCase().contains(charString.toLowerCase())) {
+                            Log.d(TAG, "matches " + s.getName());
                             filteredList.add(s);
                         }
                     }
@@ -85,18 +88,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     // Allows clicks events to be caught
     public interface ClickListener {
-        void onClick(View view, int position);
+        void onSongClick(View view, String id);
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.song_row, parent, false);
         return new ViewHolder(view, mClickListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position) {
         final LikedSong song = mLikedSongsFiltered.get(position);
         holder.songName.setText(song.getName());
         holder.songName.setSelected(true);
@@ -104,6 +107,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.artistName.setSelected(true);
 //        holder.songGenre.setText(song.getGenre());
         holder.ratingBar.setRating(song.getRating());
+        holder.itemView.setTag(song.getId());
         Glide.with(holder.image.getContext())
                 .load(song.getImageURL())
                 .into(holder.image);
@@ -114,7 +118,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return mLikedSongsFiltered.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         ImageView image;
         TextView songName, artistName, songGenre;
         RatingBar ratingBar;
@@ -122,6 +126,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         public ViewHolder(View itemView, ClickListener listener) {
             super(itemView);
+            this.listener = listener;
+            itemView.setOnClickListener(this);
             image = itemView.findViewById(R.id.ivImage);
             songName = itemView.findViewById(R.id.tvSongName);
             artistName = itemView.findViewById(R.id.tvArtist);
@@ -129,12 +135,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             ratingBar = itemView.findViewById(R.id.ratingBarList);
             itemView.setOnClickListener(this);
             Log.d(TAG, "In View holder");
-
         }
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onClick(view, getAbsoluteAdapterPosition());
+            listener.onSongClick(view, (String) view.getTag());
         }
     }
 
@@ -148,13 +153,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             Collections.sort(mLikedSongsFiltered, new Comparator<LikedSong>() {
                 @Override
                 public int compare(LikedSong s1, LikedSong s2) {
-                    if (sortMethod == 1) {
+                    if (sortMethod == SORT_SONG_NAME) {
                         //sort by song name
                         return s1.getName().compareTo(s2.getName());
-                    } else if (sortMethod == 2) {
+                    } else if (sortMethod == SORT_ARTIST_NAME) {
                         //sort by artist name
                         return s1.getArtists().get(0).getName().compareTo(s2.getArtists().get(0).getName());
-                    } else if (sortMethod == 3) {
+                    } else if (sortMethod == SORT_RATING) {
                         //sort by rating
                         return -(String.valueOf(s1.getRating()).compareTo(String.valueOf((s2.getRating()))));
                     }

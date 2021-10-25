@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private RecommendationService recommendationService;
     private static final String TAG = "MainActivity";
     private ArrayList<LikedSong> likedSongs = SongListActivity.likedSongs;
+    private SongService songService;
+    BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +64,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         getSupportActionBar().setTitle(greeting + ", " + sharedPreferences.getString("display_name", "No User"));
         getSupportActionBar().setElevation(0);
 
+        //Add recently played songs (from Spotify)
+        if (likedSongs.size() < 3) {
+            songService = new SongService(getApplicationContext());
+            addRecentlyPlayedSongs();
+        }
+
         //Setting event callback to the card stack.
         cardStack.setEventCallback(new SwipeDeck.SwipeEventCallback() {
             @Override
@@ -79,8 +87,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                             currentSong.getArtists(), currentSong.getAlbum(), "POP", description, DeckAdapter.numStars,
                             currentSong.getAlbum().getImages().get(1).getURL()));
                     showToast("Song added");
-                    Log.d(TAG, "number of liked songs: " + String.valueOf(likedSongs.size()));
-
 //                    artistService = new ArtistService(getApplicationContext());
 //                    getArtist();
                 } else {
@@ -114,11 +120,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             }
         });
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.recommendations);
     }
-
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bottomNavigationView.setSelectedItemId(R.id.recommendations);
+    }
     private void getRecommendedSongs() {
         recommendationService.getRecommendedSongs(() -> {
             recommendedTracks = recommendationService.getSongs();
@@ -168,6 +178,24 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 return true;
         }
         return false;
+    }
+
+    private void addRecentlyPlayedSongs() {
+        songService.getRecentlyPlayedTracks(() -> {
+            ArrayList<Song> songs = songService.getSongs();
+            for (int i = 0; i < 3; i++) {
+                Log.d(TAG, "adding recently played songs");
+                Song currentSong = songs.get(i);
+                String description = "A song called " + currentSong.getName() + " by "
+                        + LikedSong.formatArtistNames(currentSong.getArtists()) + " in the album "
+                        + currentSong.getAlbum().getName();
+                likedSongs.add(new LikedSong(currentSong.getId(), currentSong.getName(),
+                        currentSong.getArtists(), currentSong.getAlbum(), "POP", description,
+                        4, currentSong.getAlbum().getImages().get(1).getURL()));
+            }
+            Log.d(TAG, "addRecentlyPlayedSongs() number of liked songs: " + String.valueOf(likedSongs.size()));
+
+        });
     }
 
     private void showToast(String message) {

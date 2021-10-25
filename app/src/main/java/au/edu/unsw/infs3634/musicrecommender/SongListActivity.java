@@ -23,7 +23,6 @@ import java.util.ArrayList;
 public class SongListActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     private RecyclerView recyclerView;
     private RecyclerViewAdapter adapter;
-    private SongService songService;
     static ArrayList<LikedSong> likedSongs = new ArrayList<LikedSong>();
     private static final String TAG = "SongListActivity";
 
@@ -31,15 +30,6 @@ public class SongListActivity extends AppCompatActivity implements BottomNavigat
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song_list);
-
-        Log.d(TAG, "onCreate() number of liked songs: " + String.valueOf(likedSongs.size()));
-        //Only add the initial songs once
-        //need to fix this
-        if (likedSongs.size() < 5) {
-            addSongs();
-//            songService = new SongService(getApplicationContext());
-//            addRecentlyPlayedSongs();
-        }
 
         //Set title of menu
         getSupportActionBar().setTitle("Your Songs");
@@ -54,15 +44,12 @@ public class SongListActivity extends AppCompatActivity implements BottomNavigat
     protected void onStart() {
         super.onStart();
         recyclerView = findViewById(R.id.rvSongs);
+
         RecyclerViewAdapter.ClickListener listener = new RecyclerViewAdapter.ClickListener() {
             @Override
-            public void onClick(View view, int position) {
+            public void onSongClick(View view, String id) {
                 Log.i("location", "in onClick()");
-                final LikedSong song = likedSongs.get(position);
-                Log.i("name of song clicked", song.getName());
-                Intent intent = new Intent(SongListActivity.this, SongDetailActivity.class);
-                intent.putExtra("SONG_ID", song.getId());
-                startActivity(intent);
+                launchSongDetailActivity(id);
             }
         };
         Log.d(TAG, "onStart() number of liked songs: " + String.valueOf(likedSongs.size()));
@@ -71,6 +58,13 @@ public class SongListActivity extends AppCompatActivity implements BottomNavigat
         recyclerView.setAdapter(adapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
+    }
+
+    // Called when the user clicks on a row in the recycler view
+    private void launchSongDetailActivity(String id) {
+        Intent intent = new Intent(SongListActivity.this, SongDetailActivity.class);
+        intent.putExtra("SONG_ID", id);
+        startActivity(intent);
     }
 
     @Override
@@ -128,42 +122,5 @@ public class SongListActivity extends AppCompatActivity implements BottomNavigat
                 return true;
         }
         return false;
-    }
-
-//    private void addRecentlyPlayedSongs() {
-//        songService.getRecentlyPlayedTracks(() -> {
-//            ArrayList<Song> songs = songService.getSongs();
-//            for (int i = 0; i < 10; i++) {
-//                Log.d(TAG, "adding recently played songs");
-//                Song currentSong = songs.get(i);
-//                String description = "A song called " + currentSong.getName() + " by "
-//                        + LikedSong.formatArtistNames(currentSong.getArtists()) + " in the album "
-//                        + currentSong.getAlbum().getName();
-//                likedSongs.add(new LikedSong(currentSong.getId(), currentSong.getName(),
-//                        currentSong.getArtists(), currentSong.getAlbum(), "POP", description,
-//                        4, currentSong.getAlbum().getImages().get(1).getURL()));
-//            }
-//        });
-//    }
-
-    private void addSongs() {
-        ArrayList<Artist> artist1 = new ArrayList<>();
-        String[] genres = {"pop"};
-        artist1.add(new Artist("4yvcSjfu4PC0CYQyLy4wSq", "Glass Animals", genres));
-        ArrayList<Artist> artist2 = new ArrayList<>();
-        artist2.add(new Artist("1zNqQNIdeOUZHb8zbZRFMX", "Swan Lee", genres));
-        artist2.add(new Artist("5ZS223C6JyBfXasXxrRqOk", "Jhene Aiko", genres));
-        ArrayList<Image> image1 = new ArrayList<>();
-        image1.add(new Image("https://i.scdn.co/image/ab67616d0000b2735843d11205f6dd6a2ab5f967",
-                300, 300));
-
-        ArrayList<Image> image2 = new ArrayList<>();
-        image2.add(new Image("https://i2.wp.com/marvelousgeeksmedia.com/wp-content/uploads/2021/05/heat-waves-1615254349.jpeg?ssl=1",
-                300, 300));
-        Album album1 = new Album("2kAqjStKcwlDD59H0llhGC", artist2, image1, "Shang-Chi and The Legend of The Ten Rings: The Album");
-        Album album2 = new Album("5bfpRtBW7RNRdsm3tRyl3R", artist1, image2, "Dreamland");
-
-        likedSongs.add(new LikedSong("3USxtqRwSYz57Ewm6wWRMp", "Heat Waves", artist1, album2,"POP", "A song called Heat Waves by Glass Animals in the album Dreamland", 4, "https://i2.wp.com/marvelousgeeksmedia.com/wp-content/uploads/2021/05/heat-waves-1615254349.jpeg?ssl=1"));
-        likedSongs.add(new LikedSong("0zaoWwS8RpE3LSDdmkg8TC", "In The Dark (with Jhene Aiko)", artist2, album1,"POP", "A song from the Shang-Chi soundtrack", 5, "https://i.scdn.co/image/ab67616d0000b2735843d11205f6dd6a2ab5f967"));
     }
 }
