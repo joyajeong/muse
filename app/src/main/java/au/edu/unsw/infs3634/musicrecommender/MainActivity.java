@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         cardStack = (SwipeDeck) findViewById(R.id.swipe_deck);
 
         //Display personalised menu title
+            //move this to a new method
         Date currentLocalTime = Calendar.getInstance().getTime();
         DateFormat date = new SimpleDateFormat("HHmm");
         date.setTimeZone(TimeZone.getTimeZone("GMT+11"));
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         if (currentTime >= 1200 && currentTime < 1800) {
             greeting = "Good Afternoon";
         } else if (currentTime >= 1800) {
-            greeting = "Good Night";
+            greeting = "Good Evening";
         } else if (currentTime >= 0 && currentTime < 1200) {
             greeting = "Good Morning";
         }
