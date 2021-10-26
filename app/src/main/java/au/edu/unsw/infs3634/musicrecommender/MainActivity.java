@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         displayTitle();
 
         //Handles card swiping
-        cardStack = (SwipeDeck) findViewById(R.id.swipe_deck);
+        cardStack = findViewById(R.id.swipe_deck);
         cardStack.setEventCallback(new SwipeDeck.SwipeEventCallback() {
 
             //When user swipes right (likes a song)
@@ -159,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 song.getAlbum().getImages().get(1).getURL()));
     }
 
+    //When user interacts with the bottom navigation bar
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {

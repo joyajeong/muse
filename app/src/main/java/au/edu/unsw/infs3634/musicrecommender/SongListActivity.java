@@ -5,9 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.ClipData;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -23,7 +21,7 @@ import java.util.ArrayList;
 public class SongListActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     private RecyclerView recyclerView;
     private RecyclerViewAdapter adapter;
-    static ArrayList<LikedSong> likedSongs = new ArrayList<LikedSong>();
+    static ArrayList<LikedSong> likedSongs = new ArrayList<>();
     private static final String TAG = "SongListActivity";
 
     @Override
@@ -35,6 +33,7 @@ public class SongListActivity extends AppCompatActivity implements BottomNavigat
         getSupportActionBar().setTitle("Your Songs");
         getSupportActionBar().setElevation(0);
 
+        //Set bottom navigation bar
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.yourSongs);
@@ -43,29 +42,37 @@ public class SongListActivity extends AppCompatActivity implements BottomNavigat
     @Override
     protected void onStart() {
         super.onStart();
-        recyclerView = findViewById(R.id.rvSongs);
+        //The RecyclerView is set up in onStart() instead of onCreate() so that if the activity is
+        //started (e.g. coming from the SongDetailActivity), edited data such as the rating can
+        //be updated and reflected in the RecyclerView
 
+        //Get the RecyclerView and implement ClickListener
+        recyclerView = findViewById(R.id.rvSongs);
         RecyclerViewAdapter.ClickListener listener = new RecyclerViewAdapter.ClickListener() {
             @Override
             public void onSongClick(View view, String id) {
-                Log.i("location", "in onClick()");
+                Log.d(TAG, "Song id " + id + "clicked");
                 launchSongDetailActivity(id);
             }
         };
 
+        //Created an adapter and supply the song data to be displayed
         adapter = new RecyclerViewAdapter(likedSongs, listener);
         recyclerView.setAdapter(adapter);
+
+        //Set linear layout of RecyclerView
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
     }
 
-    // Called when the user clicks on a row in the recycler view
+    //When the user clicks on a row in the RecyclerView, detailed screen starts
     private void launchSongDetailActivity(String id) {
         Intent intent = new Intent(SongListActivity.this, SongDetailActivity.class);
         intent.putExtra("SONG_ID", id);
         startActivity(intent);
     }
 
+    //Instantiate menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -78,7 +85,6 @@ public class SongListActivity extends AppCompatActivity implements BottomNavigat
                 adapter.getFilter().filter(s);
                 return false;
             }
-
             @Override
             public boolean onQueryTextChange(String s) {
                 adapter.getFilter().filter(s);
@@ -88,36 +94,38 @@ public class SongListActivity extends AppCompatActivity implements BottomNavigat
         return true;
     }
 
+    //Reacts to when user interacts with the sort menu items
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.sortSongName:
-                //sort by song name
+                //Sort by song name
                 adapter.sort(1);
                 return true;
             case R.id.sortArtist:
-                //sort by artist name
+                //Sort by artist name
                 adapter.sort(2);
                 return true;
             case R.id.sortRating:
-                //sort by ratings
+                //Sort by ratings
                 adapter.sort(3);
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    //When user interacts with the bottom navigation bar
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.recommendations:
-                Log.d(TAG, "recommendations selected");
+                Log.d(TAG, "Recommendations selected");
                 Intent intent = new Intent(SongListActivity.this, MainActivity.class);
                 startActivity(intent);
                 SongListActivity.this.overridePendingTransition(0, 0);
                 return true;
             case R.id.yourSongs:
-                Log.d(TAG, "your Songs");
+                Log.d(TAG, "Currently on Your Songs");
                 return true;
         }
         return false;

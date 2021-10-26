@@ -16,11 +16,35 @@ public class Album {
         this.name = name;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public ArrayList<Artist> getArtists() {
+        return artists;
+    }
+
+    public void setArtists(ArrayList<Artist> artists) {
+        this.artists = artists;
+    }
+
     public ArrayList<Image> getImages() {
         return images;
     }
 
+    public void setImages(ArrayList<Image> images) {
+        this.images = images;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
