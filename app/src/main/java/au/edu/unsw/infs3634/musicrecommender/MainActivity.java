@@ -5,8 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,7 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-//Swiping feature source code from https://github.com/aaronbond/Swipe-Deck
+//Card swiping feature source code from https://github.com/aaronbond/Swipe-Deck
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -39,72 +37,53 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d(TAG, "onCreate: Starting launch");
-        // on below line we are initializing our array list and swipe deck.
+
+        //Get recommended songs from Spotify API
         recommendationService = new RecommendationService(getApplicationContext());
         getRecommendedSongs();
-        cardStack = (SwipeDeck) findViewById(R.id.swipe_deck);
 
-        //Display personalised menu title
-            //move this to a new method
-        Date currentLocalTime = Calendar.getInstance().getTime();
-        DateFormat date = new SimpleDateFormat("HHmm");
-        date.setTimeZone(TimeZone.getTimeZone("GMT+11"));
-        String localTime = date.format(currentLocalTime);
-        int currentTime = Integer.parseInt(localTime);
-        Log.i("current time: ", localTime);
-        String greeting = "Hello";
-        //need to check this
-        if (currentTime >= 1200 && currentTime < 1800) {
-            greeting = "Good Afternoon";
-        } else if (currentTime >= 1800) {
-            greeting = "Good Evening";
-        } else if (currentTime >= 0 && currentTime < 1200) {
-            greeting = "Good Morning";
-        }
-        SharedPreferences sharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
-        getSupportActionBar().setTitle(greeting + ", " + sharedPreferences.getString("display_name", "No User"));
-        getSupportActionBar().setElevation(0);
-
-        //Add recently played songs (from Spotify)
+        //Get recently played songs (from Spotify) to load into SongListActivity to ensure a minimum
+        //of 10 songs are displayed
         if (likedSongs.size() < 3) {
             songService = new SongService(getApplicationContext());
             addRecentlyPlayedSongs();
         }
 
-        //Setting event callback to the card stack.
+        //Display personalised title
+        displayTitle();
+
+        //Handles card swiping
+        cardStack = (SwipeDeck) findViewById(R.id.swipe_deck);
         cardStack.setEventCallback(new SwipeDeck.SwipeEventCallback() {
+
+            //When user swipes right (likes a song)
             @Override
             public void cardSwipedRight(int position) {
                 Song currentSong = recommendedTracks.get(position);
-                String description = "A song called " + currentSong.getName() + " by "
-                        + LikedSong.formatArtistNames(currentSong.getArtists()) + " in the album "
-                        + currentSong.getAlbum().getName();
+                Log.d(TAG, "The rating of song being added is: " + DeckAdapter.numStars);
 
                 //Check that a rating has been chosen before adding to Liked Songs list
-                //AND that the song doesn't already exist in their list
+                //AND that the song doesn't already exist in their Liked Song list
                 if (DeckAdapter.numStars > 0 && noDuplicates(currentSong.getId())) {
-                    //put this in a separate method
-                    likedSongs.add(new LikedSong(currentSong.getId(), currentSong.getName(),
-                            currentSong.getArtists(), currentSong.getAlbum(), "POP", description, DeckAdapter.numStars,
-                            currentSong.getAlbum().getImages().get(1).getURL()));
+                    //Generate song description
+                    String description = Song.createSongDescription(currentSong);
+                    //Add song as a liked song
+                    addLikedSongs(currentSong, description);
                     showToast("Song added");
-//                    artistService = new ArtistService(getApplicationContext());
-//                    getArtist();
                 } else {
-                    //This doesnt go with the noDuplicates thing
-                    showToast("Please give the song a rating");
+                    showToast("Please give the song a rating or you may already liked this song");
                 }
             }
 
             @Override
             public void cardSwipedLeft(int position) {
-
             }
 
             @Override
             public void cardsDepleted() {
-                // this method is called when no card is present
-                Toast.makeText(MainActivity.this, "No more songs present", Toast.LENGTH_SHORT).show();
+                //When there are no cards left, create new recommendations based on the songs that
+                //the user recently liked
+                showToast("No more songs present");
                 Log.d(TAG, "cardsDepleted: creating new recommendations...");
                 recommendationService.emptySongs();
                 getRecommendedSongs();
@@ -112,67 +91,82 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
             @Override
             public void cardActionDown() {
-
             }
 
             @Override
             public void cardActionUp() {
-
             }
         });
 
+        //Set up bottom navigation bar
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.recommendations);
     }
+
     @Override
     protected void onStart() {
         super.onStart();
+        //If the activity starts, ensuring the bottom navigation menu is selected to Recommendations
         bottomNavigationView.setSelectedItemId(R.id.recommendations);
     }
+
     private void getRecommendedSongs() {
         recommendationService.getRecommendedSongs(() -> {
             recommendedTracks = recommendationService.getSongs();
-
-            // on below line we are creating a variable for our adapter class and passing array list to it.
+            //Setting the recommended songs to the card/deck adapter
             final DeckAdapter adapter = new DeckAdapter(recommendedTracks, getApplicationContext());
-
-            // on below line we are setting adapter to our card stack.
             cardStack.setAdapter(adapter);
         });
     }
 
-    private boolean noDuplicates(String id) {
-        ArrayList<String> trackIDs = new ArrayList<>();
-        for (int i = 0; i < LikedSong.getLikedSongs().size(); i++) {
-            trackIDs.add(LikedSong.getLikedSongs().get(i).getId());
+    //Displays a personalised message based on the time of day
+    private void displayTitle() {
+        //Getting and formatting current time
+        Date currentLocalTime = Calendar.getInstance().getTime();
+        DateFormat date = new SimpleDateFormat("HHmm");
+        date.setTimeZone(TimeZone.getTimeZone("GMT+11"));
+        String localTime = date.format(currentLocalTime);
+        int currentTime = Integer.parseInt(localTime);
+        Log.d(TAG,"Current time: " + localTime);
+
+        String greeting = "Hello";
+        //Select greeting depending on the time
+        if (currentTime >= 1200 && currentTime < 1800) {
+            greeting = "Good Afternoon";
+        } else if (currentTime >= 1800) {
+            greeting = "Good Evening";
+        } else if (currentTime >= 0 && currentTime < 1200) {
+            greeting = "Good Morning";
         }
-        if (trackIDs.contains(id)) {
-            return false;
-        }
-        return true;
+
+        //Gets the display name of the currently logged in user through SharedPreferences
+        SharedPreferences sharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
+        //Set the action bar title
+        getSupportActionBar().setTitle(greeting + ", " + sharedPreferences.getString("display_name", "No User"));
+        getSupportActionBar().setElevation(0);
     }
 
-//    private void getArtist() {
-//        artistService.getArtist(() -> {
-//            recommendedArtists = artistService.getArtists();
-//            for (int i = 0; i < recommendedArtists.size(); i++) {
-//                for (int j = 0; j < recommendedArtists.get(i).getGenres().length; j++) {
-//                    genres.add(recommendedArtists.get(i).getGenres()[i]);
-//                    Log.d(TAG, "genres: " + recommendedArtists.get(i).getGenres()[i]);
-//                }
-//            }
-//        });
-//    }
+    private boolean noDuplicates(String id) {
+        //Checks if the song ID already exists in the Liked Song ID list
+        return !LikedSong.getLikedSongIds().contains(id);
+    }
+
+    private void addLikedSongs(Song song, String description) {
+        Log.d(TAG, "The song being added is: " + song.getName());
+        likedSongs.add(new LikedSong(song.getId(), song.getName(),
+                song.getArtists(), song.getAlbum(), "POP", description, DeckAdapter.numStars,
+                song.getAlbum().getImages().get(1).getURL()));
+    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.recommendations:
-                Log.i("TAG", "recommendations selected");
+                Log.d(TAG, "Recommendations selected");
                 return true;
             case R.id.yourSongs:
-                Log.i("TAG", "your Songs");
+                Log.i("TAG", "Going to your songs");
                 Intent intent = new Intent(MainActivity.this, SongListActivity.class);
                 startActivity(intent);
                 MainActivity.this.overridePendingTransition(0, 0);
@@ -184,18 +178,21 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private void addRecentlyPlayedSongs() {
         songService.getRecentlyPlayedTracks(() -> {
             ArrayList<Song> songs = songService.getSongs();
-            for (int i = 0; i < 3; i++) {
-                Log.d(TAG, "adding recently played songs");
-                Song currentSong = songs.get(i);
-                String description = "A song called " + currentSong.getName() + " by "
-                        + LikedSong.formatArtistNames(currentSong.getArtists()) + " in the album "
-                        + currentSong.getAlbum().getName();
-                likedSongs.add(new LikedSong(currentSong.getId(), currentSong.getName(),
-                        currentSong.getArtists(), currentSong.getAlbum(), "POP", description,
-                        4, currentSong.getAlbum().getImages().get(1).getURL()));
-            }
-            Log.d(TAG, "addRecentlyPlayedSongs() number of liked songs: " + String.valueOf(likedSongs.size()));
+            Log.d(TAG, "Adding recently played songs");
+            int sizeOfResult = songs.size();
 
+            //Pre-populating liked song list with 10 songs (assignment criteria)
+            for (int i = 0; i < sizeOfResult; i++) {
+                if (likedSongs.size() < 10) {
+                    Song currentSong = songs.get(i);
+                    String description = Song.createSongDescription(currentSong);
+
+                    if (noDuplicates(currentSong.getId())) {
+                        addLikedSongs(currentSong, description);
+                    }
+                }
+
+            }
         });
     }
 

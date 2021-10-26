@@ -12,8 +12,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,8 +38,9 @@ public class SongDetailActivity extends AppCompatActivity {
 
     public static LikedSong selectedSong;
     private AddToLibraryService addToLibraryService;
+    private ArtistService artistService;
     private TextView songName, artistNames, genre, description;
-    private Button btnAddLib, btnBack;
+    private Button btnAddLib, btnFollowArtists, btnBack;
     private RatingBar rating;
     private ImageView songImage;
     private Palette.Swatch vibrantSwatch, darkVibrantSwatch, darkMutedSwatch,lightMutedSwatch;
@@ -51,11 +55,12 @@ public class SongDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_song_detail);
 
         addToLibraryService = new AddToLibraryService(getApplicationContext());
+        artistService = new ArtistService(getApplicationContext());
 
         Bundle bundle = getIntent().getExtras();
         String selectedSongId = bundle.getString("SONG_ID");
         selectedSong = LikedSong.getLikedSong(selectedSongId);
-        Log.i("name of song clicked in detail activity", selectedSong.getName());
+        Log.d(TAG, "Song clicked: " + selectedSong.getName());
 
         //Set title of activity
         getSupportActionBar().hide();
@@ -68,6 +73,7 @@ public class SongDetailActivity extends AppCompatActivity {
         songImage = findViewById(R.id.ivSong);
         btnAddLib = findViewById(R.id.btnAddLib);
         btnBack = findViewById(R.id.btnBack);
+        btnFollowArtists = findViewById(R.id.btnFollowArtists);
 
         Glide.with(songImage.getContext())
                 .load(selectedSong.getImageURL())
@@ -122,8 +128,9 @@ public class SongDetailActivity extends AppCompatActivity {
                         }
                     };
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(SongDetailActivity.this);
-                    builder.setMessage("Remove " + selectedSong.getName() + " from your Liked Songs?").setPositiveButton("Yes", dialogClickListener)
+                    AlertDialog.Builder builder = new AlertDialog.Builder(SongDetailActivity.this, R.style.MyDialogTheme);
+                    builder.setMessage("Remove " + selectedSong.getName() + " from your Liked Songs?")
+                            .setPositiveButton("Yes", dialogClickListener)
                             .setNegativeButton("No", dialogClickListener).show();
 
                 }
@@ -135,7 +142,19 @@ public class SongDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 addToLibraryService.addSongToLibrary(selectedSong);
-                showToast(selectedSong.getName() + " added to Spotify library");
+                btnAddLib.setText("Song added to Spotify Library");
+//                showToast(selectedSong.getName() + " added to Spotify library");
+            }
+        });
+
+        btnFollowArtists.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                btnFollowArtists.setText("Artists Followed");
+                for (Artist a : selectedSong.getArtists()) {
+                    artistService.followArtist(a);
+                }
+//                showToast("Followed " + LikedSong.formatArtistNames(selectedSong.getArtists()) + " on Spotify");
             }
         });
 
@@ -189,14 +208,24 @@ public class SongDetailActivity extends AppCompatActivity {
     }
 
     private void setColours(int bgColour) {
+        //Changing the colour of buttons
         btnAddLib.setBackgroundColor(bgColour);
 
-        GradientDrawable gd = new GradientDrawable(
-                GradientDrawable.Orientation.TOP_BOTTOM,
+        GradientDrawable shape =  new GradientDrawable();
+        shape.setCornerRadius(8);
+        shape.setShape(GradientDrawable.RECTANGLE);
+        shape.setStroke(5, bgColour);
+        shape.setColor(Color.TRANSPARENT);
+        btnFollowArtists.setBackgroundDrawable(shape);
+
+
+        //Changing the colour of the background
+        GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                 new int[] {bgColour,0xFF131313});
         gd.setCornerRadius(0f);
         layout.setBackgroundDrawable(gd);
 
+        //Changing the colour of the status bar
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);

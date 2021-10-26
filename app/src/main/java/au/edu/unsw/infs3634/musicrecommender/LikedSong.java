@@ -5,11 +5,10 @@ import android.util.Log;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class LikedSong extends Song {
-//    private String id;
-//    private String name;
-//    private ArrayList<Artist> artists;
+
     private String genre;
     private String description;
     private int rating;
@@ -18,34 +17,11 @@ public class LikedSong extends Song {
 
     public LikedSong(String id, String name, ArrayList<Artist> artists, Album album, String genre, String description, int rating, String imageURL) {
         super(id, name, artists, album);
-//        this.id = id;
-//        this.name = name;
-//        this.artists = artists;
         this.genre = genre;
         this.description = description;
         this.rating = rating;
         this.imageURL = imageURL;
     }
-
-//    public String getId() {
-//        return id;
-//    }
-//
-//    public void setId(String id) {
-//        this.id = id;
-//    }
-//
-//    public String getName() {
-//        return name;
-//    }
-//
-//    public void setName(String name) {
-//        this.name = name;
-//    }
-//
-//    public ArrayList<Artist> getArtists() {
-//        return artists;
-//    }
 
     public String getGenre() {
         return genre;
@@ -85,12 +61,11 @@ public class LikedSong extends Song {
     }
 
     public static LikedSong getLikedSong(String id) {
-        // Implement a method that returns one song based on it's id
+        //Returns a matching song based on it's ID
         ArrayList<LikedSong> list = getLikedSongs();
         for (LikedSong s : list) {
             if (s.getId().equals(id)) {
-                Log.d(TAG, "Match found");
-                Log.d(TAG, "Song name: " + s.getName());
+                Log.d(TAG, "Match found for song: " + s.getName());
                 return s;
             }
         }
@@ -100,13 +75,23 @@ public class LikedSong extends Song {
 
     public static String formatArtistNames(ArrayList<Artist> artists) {
         String artistNamesArray[] = new String[artists.size()];
+
         for (int i = 0; i < artists.size(); i++) {
             artistNamesArray[i] = artists.get(i).getName();
         }
+
         String names = Arrays.toString(artistNamesArray)
                 .replace("[", "")  //remove the right bracket
                 .replace("]", "")  //remove the left bracket
-                .trim();           //remove trailing spaces from partially initialized arrays
+                .trim(); //remove trailing spaces from partially initialized arrays
         return names;
+    }
+
+    public static List getLikedSongIds() {
+        List<String> ids = new ArrayList<String>();  ;
+            for (LikedSong song : getLikedSongs()) {
+                ids.add(song.getId());
+            }
+        return ids;
     }
 }

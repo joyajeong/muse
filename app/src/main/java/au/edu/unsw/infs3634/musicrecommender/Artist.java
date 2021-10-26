@@ -1,14 +1,13 @@
 package au.edu.unsw.infs3634.musicrecommender;
 
 public class Artist {
+
     private String id;
     private String name;
-    private String[] genres;
 
-    public Artist(String id, String name, String[] genres) {
+    public Artist(String id, String name) {
         this.name = name;
         this.id = id;
-        this.genres = genres;
     }
 
     public String getId() {
@@ -27,7 +26,4 @@ public class Artist {
         this.name = name;
     }
 
-    public String[] getGenres() {
-        return genres;
-    }
 }

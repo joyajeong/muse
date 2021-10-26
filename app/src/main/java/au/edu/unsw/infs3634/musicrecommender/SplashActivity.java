@@ -22,7 +22,7 @@ public class SplashActivity extends AppCompatActivity {
     private static final String CLIENT_ID = "618b664582324b49ba2dc594b97216f7";
     private static final String REDIRECT_URI = "au.edu.unsw.infs3634.musicrecommender://callback";
     private static final int REQUEST_CODE = 1337;
-    private static final String SCOPES = "user-read-recently-played,user-library-modify,user-read-email,user-read-private";
+    private static final String SCOPES = "user-read-recently-played,user-library-modify,user-read-email,user-read-private,user-follow-modify";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +30,6 @@ public class SplashActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_splash);
-
 
         authenticateSpotify();
 
@@ -41,6 +40,7 @@ public class SplashActivity extends AppCompatActivity {
     private void authenticateSpotify() {
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
         builder.setScopes(new String[]{SCOPES});
+//        builder.setShowDialog(true);
         AuthenticationRequest request = builder.build();
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
     }
@@ -65,12 +65,12 @@ public class SplashActivity extends AppCompatActivity {
 
                 // Auth flow returned an error
                 case ERROR:
-                    // Handle error response
+                    Log.e("AUTHENTICATING", "ERROR");
                     break;
 
                 // Most likely auth flow was cancelled
                 default:
-                    // Handle other cases
+                    Log.e("AUTHENTICATING", "FLOW CANCELLED");
             }
         }
     }
@@ -90,8 +90,8 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void startMainActivity() {
-        Intent newintent = new Intent(SplashActivity.this, MainActivity.class);
-        startActivity(newintent);
+        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+        startActivity(intent);
     }
 
 }

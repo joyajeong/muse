@@ -52,7 +52,6 @@ public class SongListActivity extends AppCompatActivity implements BottomNavigat
                 launchSongDetailActivity(id);
             }
         };
-        Log.d(TAG, "onStart() number of liked songs: " + String.valueOf(likedSongs.size()));
 
         adapter = new RecyclerViewAdapter(likedSongs, listener);
         recyclerView.setAdapter(adapter);

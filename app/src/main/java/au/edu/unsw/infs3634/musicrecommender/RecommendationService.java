@@ -10,7 +10,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,34 +39,38 @@ public class RecommendationService {
         songs.removeAll(songs);
     }
 
-    //Gets the artists of the latest two liked songs
+    //Gets an artist each from the 2 most recently liked songs
     private String[] getSeedArtists() {
         //Default artists when user has not liked any songs yet
         String artists[] = {"1zNqQNIdeOUZHb8zbZRFMX", "5ZS223C6JyBfXasXxrRqOk"};
-        if (LikedSong.getLikedSongs().size() > 0) {
-            Log.d(TAG, "Getting latest seed artists ");
+        int numOfLikedSongs = LikedSong.getLikedSongs().size();
+
+        if (numOfLikedSongs >= 2) {
+            Log.d(TAG, "Getting latest seed artists");
             for (int i = 1; i < 3; i++) {
-                artists[i-1] = LikedSong.getLikedSongs().get(LikedSong.getLikedSongs().size() - i).getArtists().get(0).getId();
+                artists[i-1] = LikedSong.getLikedSongs().get(numOfLikedSongs - i).getArtists().get(0).getId();
             }
         }
         return artists;
     }
 
-    //Gets the latest two liked tracks
+    //Gets the 2 latest liked songs
     private String[] getSeedTracks() {
         //Default songs when user has not liked any songs yet
         String tracks[] = {"0zaoWwS8RpE3LSDdmkg8TC", "06nIuUCXydh4DcVfFhJa4R"};
+        int numOfLikedSongs = LikedSong.getLikedSongs().size();
 
-        if (LikedSong.getLikedSongs().size() > 0) {
+        if (numOfLikedSongs >= 2) {
             for (int i = 1; i < 3; i++) {
-                tracks[i-1] = LikedSong.getLikedSongs().get(LikedSong.getLikedSongs().size()-i).getId();
+                tracks[i-1] = LikedSong.getLikedSongs().get(numOfLikedSongs - i).getId();
             }
         }
         return tracks;
     }
 
+    //Gets recommended songs using a Spotify API
     public ArrayList<Song> getRecommendedSongs(final VolleyCallBack callBack) {
-        //The limit for the number of seeds (e.g. artists, tracks, genres) is 5.
+        //The limit for the number of seeds for recommendations (e.g. artists, tracks, genres) is 5.
         //Therefore, 2 artists, 2 tracks and 1 genre is chosen
         String seedArtists[] = getSeedArtists();
         String seedTracks[] = getSeedTracks();
@@ -75,7 +78,7 @@ public class RecommendationService {
         String URL = "https://api.spotify.com/v1/recommendations?limit=10&market=AU"
                 + "&seed_artists=" + seedArtists[0] + "%2C" + seedArtists[1]
                 + "&seed_genres=" + "pop"
-                + "&seed_tracks=" + seedTracks[0] + "%2C" + seedTracks[0];
+                + "&seed_tracks=" + seedTracks[0] + "%2C" + seedTracks[1];
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, URL, null, response -> {
@@ -92,9 +95,9 @@ public class RecommendationService {
                     }
                     callBack.onSuccess();
                 }, error -> {
-                    // TODO: Handle error
-
+                    Log.e(TAG, "GET Request Failed");
                 }) {
+
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();

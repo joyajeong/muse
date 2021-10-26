@@ -36,7 +36,22 @@ public class Song {
         return artists;
     }
 
+    public void setArtists(ArrayList<Artist> artists) {
+        this.artists = artists;
+    }
+
     public Album getAlbum() {
         return album;
     }
+
+    public void setAlbum(Album album) {
+        this.album = album;
+    }
+
+    public static String createSongDescription(Song song) {
+        return "A song called " + song.getName() + " by "
+                + LikedSong.formatArtistNames(song.getArtists()) + " in the album "
+                + song.getAlbum().getName();
+    }
+
 }

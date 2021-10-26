@@ -2,6 +2,7 @@ package au.edu.unsw.infs3634.musicrecommender;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -22,6 +23,7 @@ public class SongService {
     private ArrayList<Song> songs = new ArrayList<>();
     private SharedPreferences sharedPreferences;
     private RequestQueue queue;
+    private static final String TAG = "SongService";
 
     public SongService(Context context) {
         sharedPreferences = context.getSharedPreferences("SPOTIFY", 0);
@@ -34,6 +36,7 @@ public class SongService {
 
     //Code adapted from https://towardsdatascience.com/using-the-spotify-api-with-your-android-application-the-essentials-1a3c1bc36b9e
 
+    //Gets the user's recently played songs
     public ArrayList<Song> getRecentlyPlayedTracks(final VolleyCallBack callBack) {
         String endpoint = "https://api.spotify.com/v1/me/player/recently-played";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -52,8 +55,7 @@ public class SongService {
                     }
                     callBack.onSuccess();
                 }, error -> {
-                    // TODO: Handle error
-
+                    Log.e(TAG, "GET Request Failed");
                 }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
