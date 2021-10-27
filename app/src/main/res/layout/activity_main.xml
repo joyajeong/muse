@@ -10,20 +10,12 @@
     android:background="@drawable/gradient_background"
     tools:context=".MainActivity">
 
-    <!--on below line we are creating a swipe
-         frame layout for providing a swipe action-->
-
     <com.daprlabs.cardstack.SwipeFrameLayout
         android:id="@+id/swipe_frame"
         android:layout_width="match_parent"
         android:layout_height="557dp"
         android:orientation="vertical">
 
-        <!--below widget is used for creating a swipe deck-->
-        <!--in below widget card spacing is the spacing between cards
-            max visible is the max number of cards which are visible
-            render above is to render the cards
-            rotation degree is the angle of card rotation when card is swiped-->
         <com.daprlabs.cardstack.SwipeDeck
             android:id="@+id/swipe_deck"
             android:layout_width="match_parent"
@@ -37,18 +29,6 @@
         </com.daprlabs.cardstack.SwipeDeck>
 
     </com.daprlabs.cardstack.SwipeFrameLayout>
-
-<!--    <Button-->
-<!--        android:id="@+id/btnToList"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="44dp"-->
-<!--        android:layout_below="@id/swipe_frame"-->
-
-<!--        android:layout_alignParentStart="true"-->
-<!--        android:layout_centerHorizontal="true"-->
-<!--        android:layout_marginStart="126dp"-->
-<!--        android:layout_marginTop="55dp"-->
-<!--        android:text="See your songs" />-->
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"

@@ -10,6 +10,8 @@ import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.Map;
 
+//Code sourced from https://towardsdatascience.com/using-the-spotify-api-with-your-android-application-the-essentials-1a3c1bc36b9e
+
 public class UserService {
     private static final String ENDPOINT = "https://api.spotify.com/v1/me";
     private SharedPreferences msharedPreferences;

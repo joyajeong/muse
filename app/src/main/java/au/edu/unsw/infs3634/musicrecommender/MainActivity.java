@@ -54,49 +54,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         //Handles card swiping
         cardStack = findViewById(R.id.swipe_deck);
-        cardStack.setEventCallback(new SwipeDeck.SwipeEventCallback() {
-
-            //When user swipes right (likes a song)
-            @Override
-            public void cardSwipedRight(int position) {
-                Song currentSong = recommendedTracks.get(position);
-                Log.d(TAG, "The rating of song being added is: " + DeckAdapter.numStars);
-
-                //Check that a rating has been chosen before adding to Liked Songs list
-                //AND that the song doesn't already exist in their Liked Song list
-                if (DeckAdapter.numStars > 0 && noDuplicates(currentSong.getId())) {
-                    //Generate song description
-                    String description = Song.createSongDescription(currentSong);
-                    //Add song as a liked song
-                    addLikedSongs(currentSong, description);
-                    showToast("Song added");
-                } else {
-                    showToast("Please give the song a rating or you may already liked this song");
-                }
-            }
-
-            @Override
-            public void cardSwipedLeft(int position) {
-            }
-
-            @Override
-            public void cardsDepleted() {
-                //When there are no cards left, create new recommendations based on the songs that
-                //the user recently liked
-                showToast("No more songs present");
-                Log.d(TAG, "cardsDepleted: creating new recommendations...");
-                recommendationService.emptySongs();
-                getRecommendedSongs();
-            }
-
-            @Override
-            public void cardActionDown() {
-            }
-
-            @Override
-            public void cardActionUp() {
-            }
-        });
+        cardStack.setEventCallback(swipeEvent);
 
         //Set up bottom navigation bar
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
@@ -147,15 +105,59 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         getSupportActionBar().setElevation(0);
     }
 
+    //Handles the swiping of cards
+    SwipeDeck.SwipeEventCallback swipeEvent = new SwipeDeck.SwipeEventCallback() {
+        //When user swipes right (likes a song)
+        @Override
+        public void cardSwipedRight(int position) {
+            Song currentSong = recommendedTracks.get(position);
+            Log.d(TAG, "The rating of song being added is: " + DeckAdapter.numStars);
+
+            //Check that a rating has been chosen before adding to Liked Songs list
+            //AND that the song doesn't already exist in their Liked Song list
+            if (DeckAdapter.numStars > 0 && noDuplicates(currentSong.getId())) {
+                //Generate song description
+                String description = Song.createSongDescription(currentSong);
+                //Add song as a liked song
+                addLikedSongs(currentSong, description, DeckAdapter.numStars);
+                showToast("Song added");
+            } else {
+                showToast("Please give the song a rating or you may already liked this song");
+            }
+        }
+
+        @Override
+        public void cardSwipedLeft(int position) {
+        }
+
+        @Override
+        public void cardsDepleted() {
+            //When there are no cards left, create new recommendations based on the songs that
+            //the user recently liked
+            showToast("No more songs present");
+            Log.d(TAG, "cardsDepleted: creating new recommendations...");
+            recommendationService.emptySongs();
+            getRecommendedSongs();
+        }
+
+        @Override
+        public void cardActionDown() {
+        }
+
+        @Override
+        public void cardActionUp() {
+        }
+    };
+
     private boolean noDuplicates(String id) {
         //Checks if the song ID already exists in the Liked Song ID list
         return !LikedSong.getLikedSongIds().contains(id);
     }
 
-    private void addLikedSongs(Song song, String description) {
+    private void addLikedSongs(Song song, String description, int rating) {
         Log.d(TAG, "The song being added is: " + song.getName());
         likedSongs.add(new LikedSong(song.getId(), song.getName(),
-                song.getArtists(), song.getAlbum(), "POP", description, DeckAdapter.numStars,
+                song.getArtists(), song.getAlbum(), "POP", description, rating,
                 song.getAlbum().getImages().get(1).getURL()));
     }
 
@@ -167,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 Log.d(TAG, "Recommendations selected");
                 return true;
             case R.id.yourSongs:
-                Log.i("TAG", "Going to your songs");
+                Log.i(TAG, "Changing activity to SongListActivity");
                 Intent intent = new Intent(MainActivity.this, SongListActivity.class);
                 startActivity(intent);
                 MainActivity.this.overridePendingTransition(0, 0);
@@ -189,7 +191,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     String description = Song.createSongDescription(currentSong);
 
                     if (noDuplicates(currentSong.getId())) {
-                        addLikedSongs(currentSong, description);
+                        //Adding 10 unique songs and set the default rating as 3
+                        addLikedSongs(currentSong, description, 3);
                     }
                 }
 

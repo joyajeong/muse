@@ -45,6 +45,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             protected FilterResults performFiltering(CharSequence charSequence) {
                 String charString = charSequence.toString();
                 if (charString.isEmpty()) {
+                    //If there is no filter query, the filtered list is the default list
                     mLikedSongsFiltered = mLikedSongs;
                 } else {
                     ArrayList<LikedSong> filteredList = new ArrayList<>();
@@ -142,16 +143,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 @Override
                 public int compare(LikedSong s1, LikedSong s2) {
                     if (sortMethod == SORT_SONG_NAME) {
-                        //sort by song name
-                        return s1.getName().compareTo(s2.getName());
+                        //Sort by song name
+                        Log.d(TAG, "Sorting by Songs");
+                        return s1.getName().toLowerCase().compareTo(s2.getName().toLowerCase());
                     } else if (sortMethod == SORT_ARTIST_NAME) {
-                        //sort by artist name
-                        return s1.getArtists().get(0).getName().compareTo(s2.getArtists().get(0).getName());
+                        //Sort by artist name
+                        Log.d(TAG, "Sorting by Artists");
+                        return s1.getArtists().get(0).getName().toLowerCase()
+                                .compareTo(s2.getArtists().get(0).getName().toLowerCase());
                     } else if (sortMethod == SORT_RATING) {
-                        //sort by rating
+                        //Sort by rating
+                        Log.d(TAG, "Sorting by ratings");
                         return -(String.valueOf(s1.getRating()).compareTo(String.valueOf((s2.getRating()))));
                     }
-                    //default sort by name
+                    //Default sort by name
                     return s1.getName().compareTo(s2.getName());
                 }
             });
