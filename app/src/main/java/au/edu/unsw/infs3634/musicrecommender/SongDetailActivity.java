@@ -237,6 +237,8 @@ public class SongDetailActivity extends AppCompatActivity {
                         //If YES button clicked, remove the song from the liked songs list
                         //and go back to SongListActivity
                         SongListActivity.likedSongs.remove(selectedSong);
+                        Log.d(TAG, "Removed song:" + selectedSong.getName());
+
                         Intent intent = new Intent(SongDetailActivity.this, SongListActivity.class);
                         startActivity(intent);
                         break;

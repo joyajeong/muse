@@ -28,11 +28,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AddToLibraryService {
-    private ArrayList<Song> songs = new ArrayList<>();
-    private ArrayList<Artist> artists = new ArrayList<>();
     private SharedPreferences sharedPreferences;
     private RequestQueue queue;
-    private static final String TAG = "AdToLibraryService";
+    private static final String TAG = "AddToLibraryService";
 
     public AddToLibraryService(Context context) {
         sharedPreferences = context.getSharedPreferences("SPOTIFY", 0);
